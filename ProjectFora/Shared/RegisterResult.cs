@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace ProjectFora.Shared
 {
-    internal class RegisterResult
+    public class RegisterResult
     {
+        public bool Successful { get; set; }
+        public List<string> Errors { get; set; }
     }
 }

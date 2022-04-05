@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using ProjectFora.Shared;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,36 +10,36 @@ namespace ProjectFora.Server.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
-        // GET: api/<AccountsController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        private readonly UserManager<IdentityUser> _userManager;
 
-        // GET api/<AccountsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        public AccountsController(UserManager<IdentityUser>userManager)
         {
-            return "value";
+            _userManager = userManager;
         }
+       
 
         // POST api/<AccountsController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> RegisterUser([FromBody]RegisterModel model)
         {
+            var newUser = new IdentityUser { UserName = model.Email, Email = model.Email };
+
+            var result = await _userManager.CreateAsync(newUser, model.Password);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(x => x.Description).ToList();
+
+                return Ok(new RegisterResult { Successful = false, Errors = errors });
+
+            }
+
+            return Ok(new RegisterResult { Successful = true });
+
+           
+
         }
 
-        // PUT api/<AccountsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
 
-        // DELETE api/<AccountsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }
