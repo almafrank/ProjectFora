@@ -19,12 +19,15 @@ namespace ProjectFora.Server.Controllers
        
 
         // POST api/<AccountsController>
-        [HttpPost]
-        public async Task<IActionResult> RegisterUser([FromBody]RegisterModel model)
+        [HttpPost("Registration")]
+        public async Task<IActionResult> RegisterUser([FromBody]RegisterModel registerModel)
         {
-            var newUser = new IdentityUser { UserName = model.Email, Email = model.Email };
+            if (registerModel == null || !ModelState.IsValid)
+                return BadRequest();
 
-            var result = await _userManager.CreateAsync(newUser, model.Password);
+            var newUser = new IdentityUser { UserName = registerModel.Email, Email = registerModel.Email };
+
+            var result = await _userManager.CreateAsync(newUser, registerModel.Password);
 
             if (!result.Succeeded)
             {
