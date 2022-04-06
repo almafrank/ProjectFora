@@ -1,7 +1,9 @@
+global using ProjectFora.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using ProjectFora.Server.Data;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +15,8 @@ builder.Services.AddRazorPages();
 var connectionString= builder.Configuration.GetConnectionString("AuthConnection");  
 builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(connectionString)); 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AuthDbContext>();
-
+var connectionString2 = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString2));
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireNonAlphanumeric = false;
