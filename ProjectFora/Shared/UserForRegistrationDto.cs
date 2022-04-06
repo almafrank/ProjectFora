@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectFora.Shared
 {
-    public class RegisterModel
+    public class UserForRegistrationDto
     {
         [Required]
         [EmailAddress]

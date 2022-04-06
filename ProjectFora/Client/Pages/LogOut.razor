@@ -1,8 +1,18 @@
 ﻿@page "/logout"
+@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
-@inject IUserService UserService
+@inject IUserManager UserManager
+
+<button @onclick=HandleLogout>Log Out</button>
 
 @code {
+
+    private async void HandleLogout()
+    {
+        await LocalStorage.RemoveItemAsync("token");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+    }
     //protected override async Task OnInitializedAsync()
     //{
     //    await UserService.LogOut();

@@ -1,57 +1,46 @@
-﻿
+﻿@page "/registerUser"
 
-@page "/registerUser"
-@inject IUserService Userservice
-@*@inject IAuthService AuthService*@
+@inject IUserManager UserManager
 @inject NavigationManager NavigationManager
+
 <h3>Register</h3>
 
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">Please enter your details</h5>
-        <EditForm Model="RegisterModel" OnValidSubmit="HandleRegistration">
+        <EditForm Model="registerUser" OnValidSubmit="HandleRegistration">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
             <div class="form-group">
                 <label for="email">Email address</label>
-                <InputText Id="email" class="form-control" @bind-Value="RegisterModel.Email" />
-                <ValidationMessage For="@(() => RegisterModel.Email)" />
+                <InputText Id="email" class="form-control" @bind-Value="registerUser.Email" />
+                <ValidationMessage For="@(() => registerUser.Email)" />
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <InputText Id="password" type="password" class="form-control" @bind-Value="RegisterModel.Password" />
-                <ValidationMessage For="@(() => RegisterModel.Password)" />
+                <InputText Id="password" type="password" class="form-control" @bind-Value="registerUser.Password" />
+                <ValidationMessage For="@(() => registerUser.Password)" />
             </div>
             <div class="form-group">
                 <label for="password">Confirm Password</label>
-                <InputText Id="password" type="password" class="form-control" @bind-Value="RegisterModel.ConfirmPassword" />
-                <ValidationMessage For="@(() => RegisterModel.ConfirmPassword)" />
+                <InputText Id="confirmPassword" type="password" class="form-control" @bind-Value="registerUser.ConfirmPassword" />
+                <ValidationMessage For="@(() => registerUser.ConfirmPassword)" />
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
     </div>
 </div>
 @code {
-    private RegisterModel RegisterModel = new RegisterModel();
-    private bool ShowErrors;
-    private List<string> Errors;
+    private UserForRegistrationDto registerUser = new UserForRegistrationDto();
 
-    private async Task HandleRegistration()
+    public async Task HandleRegistration()
     {
-        ShowErrors = false;
 
-        var result = await Userservice.RegisterUser(RegisterModel);
-
-        if (result.Successful)
-        {
-            NavigationManager.NavigateTo("/login");
-        }
-        else
-        {
-            Errors = result.Errors;
-            ShowErrors = true;
-        }
+        await UserManager.RegisterUser(registerUser);
+        NavigationManager.NavigateTo("/login");
+        //Ska få tillbaka en token vid registrering
+        //Uppdatera local storage
     }
 
 }

@@ -1,8 +1,41 @@
 ﻿@page "/login"
+@inject IUserManager UserManager
+@inject ILocalStorageService LocalStorageService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
 
-<h3>LogIn</h3>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Please enter your details</h5>
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <InputText Id="email" Class="form-control" @bind-Value="loginModel.Email" />
+                <ValidationMessage For="@(() => loginModel.Email)" />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <InputText Id="password" type="password" Class="form-control" @bind-Value="loginModel.Password" />
+                <ValidationMessage For="@(() => loginModel.Password)" />
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </EditForm>
+    </div>
+</div>
 
 @code {
+    private UserForLoginDto loginModel = new UserForLoginDto();
+    
+    private async Task HandleLogin()
+    {
+        await LocalStorageService.SetItemAsStringAsync("token", loginModel.Email);
+        await AuthStateProvider.GetAuthenticationStateAsync();
+        await UserManager.Login(loginModel);
+        NavigationManager.NavigateTo("/");
+
+    }
 
 }
