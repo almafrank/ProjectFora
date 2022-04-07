@@ -1,5 +1,4 @@
 ﻿@inject ISyncLocalStorageService LocalStorage
-@inject AuthenticationStateProvider AuthStateProvider
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -23,18 +22,18 @@
             </NavLink>
         </div>
         <div>
-            <AuthorizeView>
-                <NotAuthorized>
-                    <NavLink class="nav-link" href="login">
-                        <span class="oi oi-account-login" aria-hidden="true"></span> Login
-                    </NavLink>
-                </NotAuthorized>
-                <Authorized>
-                    <NavLink class="nav-link" href="logout">
-                        <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
-                    </NavLink>
-                </Authorized>
-            </AuthorizeView>
+            @*@if (!LocalStorage.ContainKey("Token"))
+            {*@
+                 <NavLink class="nav-link" href="login">
+                    <span class="oi oi-account-login" aria-hidden="true"></span> Login
+                </NavLink>
+          @*  }
+            else
+            {*@
+                 <NavLink class="nav-link" href="logout">
+                    <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                </NavLink>
+          @*  }*@
         </div>
     </nav>
 </div>
@@ -48,10 +47,7 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+        StateHasChanged();
     }
-    //private async void Logout()
-    //{
-    //    //await LocalStorage.RemoveItemAsync("username");
-    //    //await AuthStateProvider.GetAuthenticationStateAsync();
-    //}
+
 }
