@@ -1,41 +1,36 @@
 ﻿@page "/login"
-@inject IUserManager UserManager
-@inject ILocalStorageService LocalStorageService
-@inject AuthenticationStateProvider AuthStateProvider
+@inject IAccountManager AccountManager
 @inject NavigationManager NavigationManager
 
 <div class="card">
+    <h4 class="card-header">Login</h4>
     <div class="card-body">
-        <h5 class="card-title">Please enter your details</h5>
-        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+        <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
             <DataAnnotationsValidator />
-            <ValidationSummary />
-
             <div class="form-group">
-                <label for="email">Email address</label>
-                <InputText Id="email" Class="form-control" @bind-Value="loginModel.Email" />
+                <label>Username</label>
+                <InputText @bind-Value="loginModel.Email" class="form-control" />
                 <ValidationMessage For="@(() => loginModel.Email)" />
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <InputText Id="password" type="password" Class="form-control" @bind-Value="loginModel.Password" />
+                <label>Password</label>
+                <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
                 <ValidationMessage For="@(() => loginModel.Password)" />
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="submit" class="btn btn-primary">Login</button>
+            <NavLink href="register" class="btn btn-link">Register</NavLink>
         </EditForm>
     </div>
 </div>
 
 @code {
-    private UserForLoginDto loginModel = new UserForLoginDto();
-    
-    private async Task HandleLogin()
-    {
-        await LocalStorageService.SetItemAsStringAsync("token", loginModel.Email);
-        await AuthStateProvider.GetAuthenticationStateAsync();
-        await UserManager.Login(loginModel);
-        NavigationManager.NavigateTo("/");
+    private LoginModel loginModel = new LoginModel();
 
+    private async void HandleLogin()
+    {
+        await AccountManager.Login(loginModel);
+        StateHasChanged();
+        NavigationManager.NavigateTo("/");
     }
 
 }

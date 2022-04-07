@@ -10,12 +10,10 @@ namespace ProjectFora.Server.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public AccountsController(UserManager<IdentityUser>userManager, SignInManager<IdentityUser> signInManager)
+        public AccountsController(SignInManager<IdentityUser> signInManager)
         {
-            _userManager = userManager;
             _signInManager = signInManager;
         }
         [HttpPost("Registration")]
@@ -24,7 +22,7 @@ namespace ProjectFora.Server.Controllers
 
             var user = new IdentityUser { UserName = userForRegistration.Email, Email = userForRegistration.Email };
 
-            var result = await _userManager.CreateAsync(user, userForRegistration.Password);
+            await _signInManager.UserManager.CreateAsync(user, userForRegistration.Password);
 
         }
 
@@ -36,46 +34,25 @@ namespace ProjectFora.Server.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task LoginAsync(UserForLoginDto login)
+        public async Task<ActionResult> Login(LoginModel user)
         {
-            await _signInManager.PasswordSignInAsync(login.Email, login.Password, false, false);
-          
-        }
+            var signInResult = await _signInManager.PasswordSignInAsync(user.Email, user.Password, false, false);
 
-        [HttpPost]
-        [Route("logout")]
-        public async Task LogoutAsync()
+            if (signInResult.Succeeded)
+            {
+                string token = GenerateToken();
+
+                user.Token = token;
+
+                return Ok(token);
+            }
+
+            return BadRequest("User not found");
+        }
+        public string GenerateToken()
         {
-            await _signInManager.SignOutAsync();
-
+            string token = Guid.NewGuid().ToString();
+            return token;
         }
-
-
-        // POST api/<AccountsController>
-        //[HttpPost("Registration")]
-        //public async Task<IActionResult> RegisterUser([FromBody]UserForRegistrationDto registerModel)
-        //{
-        //    if (registerModel == null || !ModelState.IsValid)
-        //        return BadRequest();
-
-        //    var newUser = new IdentityUser { UserName = registerModel.Email, Email = registerModel.Email };
-
-        //    var result = await _userManager.CreateAsync(newUser, registerModel.Password);
-
-        //    if (!result.Succeeded)
-        //    {
-        //        var errors = result.Errors.Select(x => x.Description).ToList();
-
-        //        return Ok(new RegisterResult { Successful = false, Errors = errors });
-
-        //    }
-
-        //    return Ok(new RegisterResult { Successful = true });
-
-
-
-        //}
-
-
     }
 }
