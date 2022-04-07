@@ -1,43 +1,65 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProjectFora.Server.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ProjectFora.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("Interest")]
     [ApiController]
     public class InterestController : ControllerBase
     {
-        // GET: api/<InterestController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly AppDbContext _context;
+
+        public InterestController(AppDbContext appDbContext)
         {
-            return new string[] { "value1", "value2" };
+            _context = appDbContext;
+        }
+        // GET: api/<InterestController>
+        [HttpGet("GetAllInterest")]
+        public async Task<List<InterestModel>> GetAllInterest()
+        {
+            return _context.Interests.ToList();
+
         }
 
         // GET api/<InterestController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("GetAInterest:{id}")]
+        public async Task<InterestModel> GetAInterest(int id)
         {
-            return "value";
+            var interest = _context.Interests.Where(u => u.Id == id);
+            return interest.FirstOrDefault();
         }
 
         // POST api/<InterestController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("PostAInterest")]
+        public async Task PostAInterest(InterestModel postInterest)
         {
+            _context.Interests.Add(postInterest);
+            _context.SaveChanges();
         }
 
         // PUT api/<InterestController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("UpdateAInterest:{id}")]
+        public async Task UpdateInterest(int id,InterestModel interest)
         {
+            var updateInterest = _context.Interests.Where(interest =>interest.Id == id);
+            _context.Update(updateInterest);
+            _context.SaveChanges();
         }
 
         // DELETE api/<InterestController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("DeleteInterest:{id}")]
+        public async Task DeleteInterest(int id)
         {
+            var interest = _context.Interests.FirstOrDefault(x => x.Id == id);
+            if (interest != null)
+            {
+                _context.Interests.Remove(interest);
+                _context.SaveChanges();
+            }
         }
+     
+        
     }
 }

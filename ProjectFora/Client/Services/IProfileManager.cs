@@ -8,6 +8,7 @@ namespace ProjectFora.Client.Services
         Task PostANewUser(UserModel userToAdd);
         Task<UserModel> GetUser(int id);
         Task<List<UserModel>> UpdateUser(UserModel user, int id);
+        Task <UserModel>DeleteUser(int id);
 
 
     }

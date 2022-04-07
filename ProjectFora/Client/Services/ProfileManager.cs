@@ -31,6 +31,11 @@ namespace ProjectFora.Client.Services
             var updateUser = await result.Content.ReadFromJsonAsync<List<UserModel>>();
             return updateUser;
         }
+
+        public async Task<UserModel> DeleteUser(int id)
+        {
+            return await _httpClient.GetFromJsonAsync<UserModel>($"profile/deleteUser/{id}");
+        }
     }
 }
 
