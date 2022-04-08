@@ -4,7 +4,7 @@
 
 
 <h3>Form-forum Interest:</h3>
-
+@*
 @code {
 
     [Parameter]
@@ -13,7 +13,7 @@
 
     List<ProjectFora.Shared.UserInterestModel>GetUserInterests = new List<ProjectFora.Shared.UserInterestModel>();
     List<ProjectFora.Shared.InterestModel>GetInterests = new List<ProjectFora.Shared.InterestModel>();
-    List<ProjectFora.Shared.UserModel>GetUser = new List<ProjectFora.Shared.UserModel>();
+    List<UserModel>GetUser = new List<UserModel>();
 
 
     protected override async Task OnInitializedAsync()
@@ -24,4 +24,4 @@
         GetUser = await ProfileManager.GetUser();
 
     }
-}
+}*@

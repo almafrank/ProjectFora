@@ -40,20 +40,26 @@ namespace ProjectFora.Server.Controllers
         [Route("login")]
         public async Task<ActionResult> Login(LoginModel user)
         {
-            var signInResult = await _signInManager.PasswordSignInAsync(user.Email, user.Password, false, false);
+            var result = await _signInManager.UserManager.FindByEmailAsync(user.Email);
 
-            if (signInResult.Succeeded)
+            if(result != null)
             {
+                var signInResult = await _signInManager.CheckPasswordSignInAsync(result, user.Password, false);
+               
+                if (signInResult.Succeeded)
+                {
 
-                string token = GenerateToken();
+                    string token = GenerateToken();
 
-                user.Token = token;
+                    user.Token = token;
 
-                return Ok(token);
+                    return Ok(token);
+                }
             }
 
             return BadRequest("User not found");
         }
+        //updateasync
 
         [HttpGet]
         [Route("logout")]

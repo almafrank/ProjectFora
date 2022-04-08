@@ -33,15 +33,19 @@
     </div>
 </div>
 
-@foreach(var interer in Interests)
+<div>
+    <h1>Interests - choose 1 - 5</h1>
+@foreach(var interest in Interests)
 {
-    <p>@interer.Name</p>
+    <p>@interest.Name</p>
 }
+</div>
 
 
 @code {
     private UserForRegistrationDto registerUser = new UserForRegistrationDto();
     public List<InterestModel> Interests { get; set; } = new();
+    public List<UserInterestModel> MyProperty { get; set; }
     protected override async Task OnInitializedAsync()
     {
         Interests = await Intererestmanager.GetAllInterest();
