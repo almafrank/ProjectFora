@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ProjectFora.Server.Models;
 using ProjectFora.Shared;
 using ProjectFora.Shared.AccountModels;
 
@@ -11,11 +12,11 @@ namespace ProjectFora.Server.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
         private UserAccount User { get; set; } = new();
         
-        public AccountsController(SignInManager<IdentityUser> signInManager)
+        public AccountsController(SignInManager<ApplicationUser> signInManager)
         {
             _signInManager = signInManager;
         }
@@ -29,7 +30,7 @@ namespace ProjectFora.Server.Controllers
                 return BadRequest("Username is already taken");
 
             }
-            var user = new IdentityUser { UserName = userForRegistration.Email, Email = userForRegistration.Email };
+            var user = new ApplicationUser { UserName = userForRegistration.Email, Email = userForRegistration.Email };
 
             await _signInManager.UserManager.CreateAsync(user, userForRegistration.Password);
             return Ok();
@@ -40,16 +41,18 @@ namespace ProjectFora.Server.Controllers
         [Route("login")]
         public async Task<ActionResult> Login(LoginModel user)
         {
-            var result = await _signInManager.UserManager.FindByEmailAsync(user.Email);
+            var userDb = await _signInManager.UserManager.FindByEmailAsync(user.Email);
 
-            if(result != null)
+            if(userDb != null)
             {
-                var signInResult = await _signInManager.CheckPasswordSignInAsync(result, user.Password, false);
+                var signInResult = await _signInManager.CheckPasswordSignInAsync(userDb, user.Password, false);
                
                 if (signInResult.Succeeded)
                 {
 
                     string token = GenerateToken();
+
+                    userDb.Token = token;
 
                     user.Token = token;
 
