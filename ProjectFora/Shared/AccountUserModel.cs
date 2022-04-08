@@ -8,6 +8,7 @@ namespace ProjectFora.Shared
 { 
     public class AccountUserModel
     {
+        //hämtar användare från db och include()
         public int Id { get; set; }
         public string Username { get; set; } = String.Empty;
         public bool Banned { get; set; }
@@ -18,3 +19,4 @@ namespace ProjectFora.Shared
         public List<MessageModel> Messages { get; set; } // Messages created by this user
     }
 }
+//Iresult
