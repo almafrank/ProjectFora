@@ -35,9 +35,12 @@
 
 <div>
     <h1>Interests - choose 1 - 5</h1>
-@foreach(var interest in Interests)
-{
-    <p>@interest.Name</p>
+   
+    @foreach(var interest in Interests)
+    {
+        <div>
+       <input type="checkbox">@interest.Name
+       </div>
 }
 </div>
 
