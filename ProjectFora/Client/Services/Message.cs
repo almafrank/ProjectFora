@@ -3,15 +3,15 @@ using System.Net.Http.Json;
 
 namespace ProjectFora.Client.Services
 {
-<<<<<<< Updated upstream
     public interface IMessage
     {
-
+        Task Post(MessageModel postmessage);
+        Task<MessageModel?> DeleteMessage(int id);
+        Task<List<MessageModel>> GetAllMessages();
     }
-    public class Message
-=======
+
     public class Message : IMessage
->>>>>>> Stashed changes
+
     {
         private readonly HttpClient _httpClient;
 
