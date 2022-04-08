@@ -29,9 +29,11 @@ namespace ProjectFora.Client.Services
 
         public async Task RegisterUser(UserForRegistrationDto userForRegistration)
         {
-            //måste kolla så att inte användaren redan finns på databasen
-            var result = await _httpClient.PostAsJsonAsync("accounts/registration", userForRegistration);
-     
+            //Måste kolla så att inte användaren redan finns på databasen
+            if(userForRegistration != null)
+            {
+                var result = await _httpClient.PostAsJsonAsync("accounts/registration", userForRegistration);
+            }
         }
 
         public async Task Login(LoginModel loginModel)
