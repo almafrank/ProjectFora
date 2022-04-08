@@ -20,14 +20,17 @@ namespace ProjectFora.Server.Controllers
             _signInManager = signInManager;
         }
         [HttpPost("Registration")]
-        public async Task RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
+        public async Task<ActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
         {
-            //if (_signInManager.UserManager.Users.Any(x => x.Email == userForRegistration.Email))
-            //    return BadRequest("Username is already taken");
+            if (_signInManager.UserManager.Users.Any(x => x.Email == userForRegistration.Email))
+            {
+                return BadRequest("Username is already taken");
+
+            }
             var user = new IdentityUser { UserName = userForRegistration.Email, Email = userForRegistration.Email };
 
             await _signInManager.UserManager.CreateAsync(user, userForRegistration.Password);
-
+            return Ok();
         }
 
    
