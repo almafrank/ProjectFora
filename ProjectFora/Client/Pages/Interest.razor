@@ -1,5 +1,27 @@
-﻿<h3>Interest</h3>
+﻿@page "/interest"
+@inject IProfileManager ProfileManager
+@inject NavigationManager NavigationManager
+
+
+<h3>Form-forum Interest:</h3>
 
 @code {
 
+    [Parameter]
+    public int UserId{ get; set; }
+    public int InterestId{ get; set; }
+
+    List<ProjectFora.Shared.UserInterestModel>GetUserInterests = new List<ProjectFora.Shared.UserInterestModel>();
+    List<ProjectFora.Shared.InterestModel>GetInterests = new List<ProjectFora.Shared.InterestModel>();
+    List<ProjectFora.Shared.UserModel>GetUser = new List<ProjectFora.Shared.UserModel>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        GetInterests = await ProfileManager.GetAllInterest();
+        GetUser = await ProfileManager.GetUser();
+
+    }
 }
