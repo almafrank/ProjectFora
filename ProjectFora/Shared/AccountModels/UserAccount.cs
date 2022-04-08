@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectFora.Shared
+namespace ProjectFora.Shared.AccountModels
 {
-    public class AccountUserModel
+    public class UserAccount
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Email { get; set; }
-        public string Token { get; set; }
+        public string Token { get; set; } = String.Empty;
         public bool IsDeleting { get; set; }
     }
 }

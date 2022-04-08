@@ -16,7 +16,7 @@ namespace ProjectFora.Server.Controllers
         }
         // GET all users: api/<ProfileController>
         [HttpGet("Users")]
-        public async Task<List<UserModel>> GetAllUsers()
+        public async Task<List<AccountUserModel>> GetAllUsers()
         {
             return _context.Users.ToList();
           
@@ -24,7 +24,7 @@ namespace ProjectFora.Server.Controllers
 
         // GET singel user: api/<ProfileController>/5
         [HttpGet("User:{id}")]
-        public async Task<UserModel?> GetUser(int id)
+        public async Task<AccountUserModel?> GetUser(int id)
         {
            var user= _context.Users.Where(u => u.Id == id);
             return user.FirstOrDefault();
@@ -32,7 +32,7 @@ namespace ProjectFora.Server.Controllers
 
         // POST a new user: api/<ProfileController>
         [HttpPost("newUser")]
-        public async Task PostANewUser([FromBody] UserModel userToAdd)
+        public async Task PostANewUser([FromBody] AccountUserModel userToAdd)
         {
             _context.Users.Add(userToAdd);
             _context.SaveChanges();
@@ -40,7 +40,7 @@ namespace ProjectFora.Server.Controllers
 
         // PUT,update a user:  api/<ProfileController>/5
         [HttpPut("updateUser:{id}")]
-        public async Task UpdateUser(int id, [FromBody]UserModel user)
+        public async Task UpdateUser(int id, [FromBody]AccountUserModel user)
         {
             var updateUser = _context.Users.Where(user => user.Id == id);
             _context.Update(updateUser);

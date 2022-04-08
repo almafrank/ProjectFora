@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ProjectFora.Shared;
+using ProjectFora.Shared.AccountModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,6 +13,8 @@ namespace ProjectFora.Server.Controllers
     {
         private readonly SignInManager<IdentityUser> _signInManager;
 
+        private UserAccount User { get; set; } = new();
+        
         public AccountsController(SignInManager<IdentityUser> signInManager)
         {
             _signInManager = signInManager;
@@ -19,19 +22,15 @@ namespace ProjectFora.Server.Controllers
         [HttpPost("Registration")]
         public async Task RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
         {
-
+            //if (_signInManager.UserManager.Users.Any(x => x.Email == userForRegistration.Email))
+            //    return BadRequest("Username is already taken");
             var user = new IdentityUser { UserName = userForRegistration.Email, Email = userForRegistration.Email };
 
             await _signInManager.UserManager.CreateAsync(user, userForRegistration.Password);
 
         }
 
-        //[HttpGet("currentUser")]
-        //public async Task<UserForLoginDto> GetCurrentUser()
-        //{
-        //   var currentUser = await _signInManager.UserManager.FindByLoginAsync
-        //}
-
+   
         [HttpPost]
         [Route("login")]
         public async Task<ActionResult> Login(LoginModel user)
@@ -40,6 +39,7 @@ namespace ProjectFora.Server.Controllers
 
             if (signInResult.Succeeded)
             {
+
                 string token = GenerateToken();
 
                 user.Token = token;
@@ -49,6 +49,23 @@ namespace ProjectFora.Server.Controllers
 
             return BadRequest("User not found");
         }
+
+        [HttpGet]
+        [Route("logout")]
+        public async Task Logout()
+        {
+
+          await _signInManager.SignOutAsync();
+        }
+
+
+
+        //[HttpGet("currentUser")]
+        //public async Task<UserForLoginDto> GetCurrentUser()
+        //{
+
+        //}
+
         public string GenerateToken()
         {
             string token = Guid.NewGuid().ToString();

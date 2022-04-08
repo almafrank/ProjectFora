@@ -1,14 +1,21 @@
 ﻿using Microsoft.AspNetCore.Components;
+using ProjectFora.Shared.AccountModels;
 using System.Net.Http.Json;
 
 namespace ProjectFora.Client.Services
 {
+    public interface IAccountManager
+    {
+        Task RegisterUser(UserForRegistrationDto userForRegistration);
+        Task Login(LoginModel loginModel);
+        Task Logout();
+        Task GetCurrentUser();
+    }
     public class AccountManager : IAccountManager
     {
         private readonly HttpClient _httpClient;
         private readonly NavigationManager _navigationManager;
         private readonly ILocalStorageService _localStorageService;
-        public UserModel User { get; private set; }
 
         public AccountManager(HttpClient httpClient, NavigationManager navigationManager, ILocalStorageService localStorageService)
         {
@@ -38,10 +45,8 @@ namespace ProjectFora.Client.Services
         {
             await _localStorageService.RemoveItemAsync("Token");
             _navigationManager.NavigateTo("/");
-  
         }
 
-       
         public async Task GetCurrentUser()
         {
             await _httpClient.GetAsync("accounts/currentUser");

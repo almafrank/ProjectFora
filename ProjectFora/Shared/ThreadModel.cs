@@ -21,7 +21,7 @@ namespace ProjectFora.Shared
         public InterestModel Interest { get; set; }
         [ForeignKey(nameof(User))]
         public int? UserId { get; set; }
-        public UserModel? User { get; set; }
+        public AccountUserModel? User { get; set; }
 
     }
 }

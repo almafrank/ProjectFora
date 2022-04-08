@@ -13,7 +13,7 @@ namespace ProjectFora.Server.Data
         public DbSet<InterestModel> Interests { get; set; }
         public DbSet<ThreadModel> Threads { get; set; }
         public DbSet<MessageModel> Messages { get; set; }
-        public DbSet<UserModel> Users { get; set; }
+        public DbSet<AccountUserModel> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectFora.Shared
 { 
-    public class UserModel
+    public class AccountUserModel
     {
         public int Id { get; set; }
         public string Username { get; set; } = String.Empty;
