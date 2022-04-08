@@ -23,14 +23,18 @@
             </NavLink>
         </div>
         <div>
-
-            <NavLink @onlick="ChangeStatus" class="nav-link" href="logout">
-                <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
-            </NavLink>
-
-            <NavLink @onlick="ChangeStatus" class="nav-link" href="login">
-                <span class="oi oi-account-login" aria-hidden="true"></span> Login
-            </NavLink>
+            @if (userStatus != null && userStatus.IsLoggedIn)
+            {
+                <NavLink @onlick="ChangeStatus" class="nav-link" href="logout">
+                    <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                </NavLink>
+            }
+            else
+            {
+                <NavLink @onlick="ChangeStatus" class="nav-link" href="login">
+                    <span class="oi oi-account-login" aria-hidden="true"></span> Login
+                </NavLink>
+            }
 
         </div>
     </nav>
@@ -41,9 +45,25 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    private UserStatusDto? userStatus;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // 1. Hämta token från Local Storage
+
+        var token = await LocalStorage.GetItemAsStringAsync("Token");
+        token = token.Replace("\"", "");
+
+        // 2. Skicka den token:en till API:t
+
+        userStatus = await AccountManager.CheckUserLogin(token);
+    }
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+        StateHasChanged();
     }
+
 
 }

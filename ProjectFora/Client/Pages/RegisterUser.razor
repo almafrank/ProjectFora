@@ -34,27 +34,20 @@
 </div>
 
 <div>
-<<<<<<< Updated upstream
-    <h1>Interests - choose 1 - 5</h1>
-   
-    @foreach(var interest in Interests)
-    {
-        <div>
-       <input type="checkbox">@interest.Name
-       </div>
-}
-</div>
-=======
-    <h1>Interests - choose 1 - 5</h1><div class="col-lg-6 p-3 d-flex">
-           
 
-    @foreach(var interest in Interests)
-    {
-        <input type="checkbox"/>@interest
-    }
-   </div>
-   </div>
->>>>>>> Stashed changes
+
+    <h1>Interests - choose 1 - 5</h1><div class="col-lg-6 p-3 d-flex">
+
+
+        @foreach (var interest in Interests)
+        {
+            <input type="checkbox" />
+
+            @interest
+        }
+    </div>
+</div>
+
 
 
 @code {
@@ -68,10 +61,10 @@
     }
     public async Task HandleRegistration()
     {
-         //måste kolla så att inte användaren redan finns på databasen
+        //måste kolla så att inte användaren redan finns på databasen
         await UserManager.RegisterUser(registerUser);
         NavigationManager.NavigateTo("/login");
-     
+
     }
 
 }
