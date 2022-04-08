@@ -12,7 +12,7 @@ namespace ProjectFora.Client.Services
         Task Logout();
         Task GetCurrentUser();
 
-        Task CheckUserLogin(string token);
+        Task<UserStatusDto> CheckUserLogin(string token);
     }
     public class AccountManager : IAccountManager
     {
@@ -59,7 +59,7 @@ namespace ProjectFora.Client.Services
             await _httpClient.GetAsync("accounts/currentUser");
         }
 
-        public async Task CheckUserLogin(string token)
+        public async Task<UserStatusDto> CheckUserLogin(string token)
         {
             var response = await _httpClient.GetAsync($"accounts/check?accessToken={token}");
 
@@ -67,9 +67,12 @@ namespace ProjectFora.Client.Services
             {
                 var result = await response.Content.ReadAsStringAsync();
 
-                var data = JsonConvert
+                var data = JsonConvert.DeserializeObject<UserStatusDto>(result);
+
+                return data;
             }
 
+            return null;
         }
     }
 }

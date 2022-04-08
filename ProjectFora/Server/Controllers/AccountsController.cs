@@ -69,6 +69,28 @@ namespace ProjectFora.Server.Controllers
         //updateasync
 
         [HttpGet]
+        [Route("check")]
+        public async Task<ActionResult<UserStatusDto>> CheckUserLogin([FromQuery] string accessToken)
+        {
+            // Returnera någon slags flagga som säger isLoggedIn och isAdmin
+
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
+
+            if(user != null)
+            {
+                UserStatusDto userStatus = new();
+
+                userStatus.IsLoggedIn = true;
+
+                userStatus.IsAdmin = await _signInManager.UserManager.IsInRoleAsync(user, "Admin");
+
+                return Ok(userStatus);
+            }
+
+            return BadRequest("User not found");
+        }
+
+        [HttpGet]
         [Route("logout")]
         public async Task Logout()
         {
