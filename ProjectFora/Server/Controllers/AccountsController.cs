@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ProjectFora.Server.Data;
 using ProjectFora.Server.Models;
 using ProjectFora.Shared;
 using ProjectFora.Shared.AccountModels;
@@ -13,12 +14,14 @@ namespace ProjectFora.Server.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly AuthDbContext _context;
 
         private UserAccount User { get; set; } = new();
         
-        public AccountsController(SignInManager<ApplicationUser> signInManager)
+        public AccountsController(SignInManager<ApplicationUser> signInManager, AuthDbContext context)
         {
             _signInManager = signInManager;
+            _context = context;
         }
         [HttpPost("Registration")]
         public async Task<ActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
@@ -53,6 +56,7 @@ namespace ProjectFora.Server.Controllers
                     string token = GenerateToken();
 
                     userDb.Token = token;
+                    _context.SaveChanges();
 
                     user.Token = token;
 
