@@ -22,6 +22,8 @@ namespace ProjectFora.Server.Controllers
         [HttpPost("Registration")]
         public async Task<ActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
         {
+            //måste kolla så att inte användaren redan finns på databasen
+
             if (_signInManager.UserManager.Users.Any(x => x.Email == userForRegistration.Email))
             {
                 return BadRequest("Username is already taken");

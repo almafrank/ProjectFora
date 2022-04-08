@@ -2,6 +2,7 @@
 
 @inject IAccountManager UserManager
 @inject NavigationManager NavigationManager
+@inject IInterestManager Intererestmanager
 
 <h3>Register</h3>
 
@@ -31,16 +32,26 @@
         </EditForm>
     </div>
 </div>
+
+@foreach(var interer in Interests)
+{
+    <p>@interer.Name</p>
+}
+
+
 @code {
     private UserForRegistrationDto registerUser = new UserForRegistrationDto();
-
+    public List<InterestModel> Interests { get; set; } = new();
+    protected override async Task OnInitializedAsync()
+    {
+        Interests = await Intererestmanager.GetAllInterest();
+    }
     public async Task HandleRegistration()
     {
-
+         //måste kolla så att inte användaren redan finns på databasen
         await UserManager.RegisterUser(registerUser);
         NavigationManager.NavigateTo("/login");
-        //Ska få tillbaka en token vid registrering
-        //Uppdatera local storage
+     
     }
 
 }
