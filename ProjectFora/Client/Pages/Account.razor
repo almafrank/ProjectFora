@@ -1,14 +1,31 @@
 ﻿@inject ILocalStorageService LocalStorage
+@inject IAccountManager AccountManager
 @page "/profile"
 
 <h3>Profile</h3>
+
+@if(userStatus != null && userStatus.IsLoggedIn)
+{
+    <h1>You only see this because you are logged in</h1>
+
+    @if(userStatus.IsAdmin)
+    {
+        <h1>You only see this because you are an admin</h1>
+    }
+}
+else 
+{
+    <h1>Unauthorized</h1>
+}
 
 @code {
     // Auth pipeline:
     // 1. Hämta token från Local Storage
     // 2. Skicka den token:en till API:t
     // 3. API:t kollar i databasen och jämför
-    // 4. Stämmer? Skicka tillbaka en book "isLoggedIn"
+    // 4. Stämmer? Skicka tillbaka en bool "isLoggedIn"
+
+    private UserStatusDto? userStatus;
 
     protected override async Task OnInitializedAsync()
     {
@@ -19,6 +36,7 @@
 
         // 2. Skicka den token:en till API:t
 
+        userStatus = await AccountManager.CheckUserLogin(token);
     }
 
 }

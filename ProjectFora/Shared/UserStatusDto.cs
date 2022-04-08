@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace ProjectFora.Shared
 {
-    internal class UserStatusDto
+    public class UserStatusDto
     {
+        public bool IsLoggedIn { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

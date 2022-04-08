@@ -1,4 +1,5 @@
-﻿@inject ISyncLocalStorageService LocalStorage
+﻿@inject ILocalStorageService LocalStorage
+@inject IAccountManager AccountManager
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -22,18 +23,18 @@
             </NavLink>
         </div>
         <div>
-            @*@if (!LocalStorage.ContainKey("Token"))
-            {*@
-                 <NavLink class="nav-link" href="login">
-                    <span class="oi oi-account-login" aria-hidden="true"></span> Login
-                </NavLink>
-          @*  }
-            else
-            {*@
-                 <NavLink class="nav-link" href="logout">
+            @if (userStatus.IsLoggedIn)
+            {
+                <NavLink @onlick="ChangeStatus" class="nav-link" href="logout">
                     <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
                 </NavLink>
-          @*  }*@
+            }
+            else
+            {
+                <NavLink @onlick="ChangeStatus" class="nav-link" href="login">
+                    <span class="oi oi-account-login" aria-hidden="true"></span> Login
+                </NavLink>
+            }
         </div>
     </nav>
 </div>
@@ -43,11 +44,28 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    private UserStatusDto? userStatus = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // 1. Hämta token från Local Storage
+
+        var token = await LocalStorage.GetItemAsStringAsync("Token");
+        token = token.Replace("\"", "");
+
+        // 2. Skicka den token:en till API:t
+
+        userStatus = await AccountManager.CheckUserLogin(token);
+    }
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
-        StateHasChanged();
     }
+
+    //private void ChangeStatus()
+    //{
+    //    StateHasChanged();
+    //}
 
 }
