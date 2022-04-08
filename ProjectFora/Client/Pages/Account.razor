@@ -1,7 +1,24 @@
-﻿@page "/profile"
+﻿@inject ILocalStorageService LocalStorage
+@page "/profile"
 
 <h3>Profile</h3>
 
 @code {
+    // Auth pipeline:
+    // 1. Hämta token från Local Storage
+    // 2. Skicka den token:en till API:t
+    // 3. API:t kollar i databasen och jämför
+    // 4. Stämmer? Skicka tillbaka en book "isLoggedIn"
+
+    protected override async Task OnInitializedAsync()
+    {
+        // 1. Hämta token från Local Storage
+
+        var token = await LocalStorage.GetItemAsStringAsync("Token");
+        token = token.Replace("\"", "");
+
+        // 2. Skicka den token:en till API:t
+
+    }
 
 }

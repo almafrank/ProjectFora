@@ -76,8 +76,20 @@ namespace ProjectFora.Server.Controllers
           await _signInManager.SignOutAsync();
         }
 
+        //[HttpPost]
+        //[Route("editUser")]
+        //public async Task<ActionResult> EditUser(LoginModel user)
+        //{
+        //    var userDb = await _signInManager.UserManager.FindByEmailAsync(user.Email);
 
+        //    if(userDb != null)
+        //    {
+                
+        //    }
 
+        //}
+
+        //mAP minimal api
         //[HttpGet("currentUser")]
         //public async Task<UserForLoginDto> GetCurrentUser()
         //{

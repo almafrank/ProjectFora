@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json;
 using ProjectFora.Shared.AccountModels;
 using System.Net.Http.Json;
 
@@ -10,6 +11,8 @@ namespace ProjectFora.Client.Services
         Task Login(LoginModel loginModel);
         Task Logout();
         Task GetCurrentUser();
+
+        Task CheckUserLogin(string token);
     }
     public class AccountManager : IAccountManager
     {
@@ -51,7 +54,22 @@ namespace ProjectFora.Client.Services
 
         public async Task GetCurrentUser()
         {
+            //StringContent stringContent = new StringContent();
+            //string content = await _httpClient.GetStringAsync();
             await _httpClient.GetAsync("accounts/currentUser");
+        }
+
+        public async Task CheckUserLogin(string token)
+        {
+            var response = await _httpClient.GetAsync($"accounts/check?accessToken={token}");
+
+            if(response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+
+                var data = JsonConvert
+            }
+
         }
     }
 }
