@@ -34,6 +34,7 @@
 </div>
 
 <div>
+<<<<<<< Updated upstream
     <h1>Interests - choose 1 - 5</h1>
    
     @foreach(var interest in Interests)
@@ -43,12 +44,24 @@
        </div>
 }
 </div>
+=======
+    <h1>Interests - choose 1 - 5</h1><div class="col-lg-6 p-3 d-flex">
+           
+
+    @foreach(var interest in Interests)
+    {
+        <input type="checkbox"/>@interest
+    }
+   </div>
+   </div>
+>>>>>>> Stashed changes
 
 
 @code {
     private UserForRegistrationDto registerUser = new UserForRegistrationDto();
     public List<InterestModel> Interests { get; set; } = new();
     public List<UserInterestModel> MyProperty { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         Interests = await Intererestmanager.GetAllInterest();
