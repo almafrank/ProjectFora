@@ -14,7 +14,7 @@ namespace ProjectFora.Server.Controllers
         {
             _context = appDbContext;
         }
-        // GET all users: api/<ProfileController>
+        // GET all users: 
         [HttpGet("Users")]
         public async Task<List<AccountUserModel>> GetAllUsers()
         {
@@ -22,7 +22,7 @@ namespace ProjectFora.Server.Controllers
           
         }
 
-        // GET singel user: api/<ProfileController>/5
+        // GET singel user: 
         [HttpGet("User:{id}")]
         public async Task<AccountUserModel?> GetUser(int id)
         {
@@ -30,7 +30,7 @@ namespace ProjectFora.Server.Controllers
             return user.FirstOrDefault();
         }
 
-        // POST a new user: api/<ProfileController>
+        // POST a new user: 
         [HttpPost("newUser")]
         public async Task PostANewUser([FromBody] AccountUserModel userToAdd)
         {
@@ -38,7 +38,7 @@ namespace ProjectFora.Server.Controllers
             _context.SaveChanges();
         }
 
-        // PUT,update a user:  api/<ProfileController>/5
+        // PUT,update a user:  
         [HttpPut("updateUser:{id}")]
         public async Task UpdateUser(int id, [FromBody]AccountUserModel user)
         {
@@ -47,7 +47,7 @@ namespace ProjectFora.Server.Controllers
             _context.SaveChanges();
         }
 
-        // DELETE a user: api/<ProfileController>/5
+        // DELETE a user:
         [HttpDelete("deleteUser:{id}")]
         public async Task DeleteUser(int id)
         {

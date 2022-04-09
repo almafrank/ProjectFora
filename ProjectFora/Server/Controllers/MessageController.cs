@@ -17,34 +17,35 @@ namespace ProjectFora.Server.Controllers
             _context = appDbContext;
         }
 
-        // GET: api/<MessageController>
+        // GET: 
         [HttpGet("GetMessages")]
         public async Task<List<MessageModel>>GetAllMessages()
         {
             return _context.Messages.ToList();
         }
 
-        //// GET api/<MessageController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        
 
-        // POST api/<MessageController>
+        // POST 
         [HttpPost("PostMessage")]
-        public async Task Post([FromBody] string value)
+        public async Task Post([FromBody] MessageModel postMessage)
         {
-
+            _context.Messages.Add(postMessage);
+            _context.SaveChanges();
         }
 
         
 
-        // DELETE api/<MessageController>/5
+        // DELETE 
         [HttpDelete("DeleteMessage:{id}")]
         public async Task DeleteMessage(int id)
         {
-
+            var usermessage = _context.Messages.FirstOrDefault(Message => Message.Id == id);
+            if (usermessage != null)
+            {
+                _context.Messages.Remove(usermessage);
+                _context.SaveChanges();
+            }
         }
     }
 }

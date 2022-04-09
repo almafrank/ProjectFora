@@ -15,7 +15,7 @@ namespace ProjectFora.Server.Controllers
         {
             _context = appDbContext;
         }
-        // GET: api/<InterestController>
+        // GET: 
         [HttpGet("GetAllInterest")]
         public async Task<List<InterestModel>> GetAllInterest()
         {
@@ -23,7 +23,7 @@ namespace ProjectFora.Server.Controllers
 
         }
 
-        // GET api/<InterestController>/5
+        // GET :
         [HttpGet("GetAInterest:{id}")]
         public async Task<InterestModel> GetAInterest(int id)
         {
@@ -31,7 +31,7 @@ namespace ProjectFora.Server.Controllers
             return interest.FirstOrDefault();
         }
 
-        // POST api/<InterestController>
+        // POST
         [HttpPost("PostAInterest")]
         public async Task PostAInterest(InterestModel postInterest)
         {
@@ -39,7 +39,7 @@ namespace ProjectFora.Server.Controllers
             _context.SaveChanges();
         }
 
-        // PUT api/<InterestController>/5
+        // PUT 
         [HttpPut("UpdateAInterest:{id}")]
         public async Task UpdateInterest(int id,InterestModel interest)
         {
@@ -48,7 +48,7 @@ namespace ProjectFora.Server.Controllers
             _context.SaveChanges();
         }
 
-        // DELETE api/<InterestController>/5
+        // DELETE 
         [HttpDelete("DeleteInterest:{id}")]
         public async Task DeleteInterest(int id)
         {

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectFora.Server.Data;
@@ -20,54 +20,45 @@ namespace ProjectFora.Server.Controllers
         {
             _context = appDbContext;
         }
-        // GET: 
+        // GET: get users all interest
         [HttpGet("AllUserInterest")]
 
-        //public  List<UserInterestModel> GetUserInterest()
-        //{
-           
-             
-        //}
-
-
-        ////// GET
-        //[HttpGet("GetSingelInterest:{id}")]
-        //public async Task GetSingelInterest( UserInterestModel user)
-        //{
-        //   var userInterest = _context.Interests.Where(x => x. == user);
-        //    await _context.SaveChangesAsync();  
-        //}
-
-
-
-        //// POST ,user post a new interest:
-        //[HttpPost("PostUsernewInterest")]
-        //public Task<UserInterestModel>UserPostNewInterest([FromBody] InterestModel postnewInterest)
-        //{
-        //    _context.Interests.Add(postnewInterest);
-        //    _context.SaveChanges();
-        //}
-
-        // PUT ,user update a interest:
-        [HttpPut("ChangeUserInterest:{id}")]
-        public async Task UserUpdateInterest(int id, [FromBody] UserInterestModel interest)
+        public async Task<List<UserInterestModel>> GetUserInterest()
         {
-            var updateUserInterest = _context.Interests.Where(user => user.Id == id);
-            _context.Update(updateUserInterest);
-            _context.SaveChanges();
+
+            return await _context.UserInterests.ToListAsync();
 
         }
 
+        //// GET a singel interest
+        //[HttpGet("GetSingelInterest:{id}")]
+        //public async Task<UserInterestModel> GetSingelInterest( int InterestId)
+        
+        //{
+        //    return await _context.UserInterests.FirstOrDefaultAsync(x => x.InterestId == InterestId);   
+        //}
+        
+
+        // POST ,user post a new interest:
+        [HttpPost("PostUsernewInterest")]
+        public async Task PostUserInterest(UserInterestModel postinterest)
+        {
+            _context.UserInterests.Add(postinterest);
+            _context.SaveChanges();
+        }
+
+
+
         // DELETE , user delete a interest:
         [HttpDelete("DeleteUserinterest:{id}")]
-        public async Task UserDeleteInterest(UserInterestModel interest,int id)
+        public async Task<UserInterestModel> UserDeleteInterest(int InterestId)
         {
 
             {
-                var deleteUserInterest = _context.Interests.FirstOrDefault(x => x.Id == id);
+                var deleteUserInterest = _context.UserInterests.FirstOrDefault(x => x.InterestId == InterestId);
                 if (deleteUserInterest != null)
                 {
-                    _context.Interests.Remove(deleteUserInterest);
+                    _context.UserInterests.Remove(deleteUserInterest);
                     _context.SaveChanges();
                 }
 
