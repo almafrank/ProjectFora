@@ -41,9 +41,11 @@
 
         @foreach (var interest in Interests)
         {
+            <div>
             <input type="checkbox" />
 
-            @interest
+            @interest.Name
+            </div>
         }
     </div>
 </div>
@@ -51,6 +53,8 @@
 
 
 @code {
+    public AccountUserModel AddUser { get; set; } = new();
+
     private UserForRegistrationDto registerUser = new UserForRegistrationDto();
     public List<InterestModel> Interests { get; set; } = new();
     public List<UserInterestModel> MyProperty { get; set; }
@@ -62,7 +66,7 @@
     public async Task HandleRegistration()
     {
         //måste kolla så att inte användaren redan finns på databasen
-        await UserManager.RegisterUser(registerUser);
+        await UserManager.RegisterUser(registerUser,AddUser);
         NavigationManager.NavigateTo("/login");
 
     }

@@ -1,5 +1,4 @@
-﻿@inject ILocalStorageService LocalStorage
-@inject IAccountManager AccountManager
+﻿
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -45,24 +44,13 @@
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private UserStatusDto? userStatus;
+   
 
-    protected override async Task OnInitializedAsync()
-    {
-        // 1. Hämta token från Local Storage
-
-        var token = await LocalStorage.GetItemAsStringAsync("Token");
-        token = token.Replace("\"", "");
-
-        // 2. Skicka den token:en till API:t
-
-        userStatus = await AccountManager.CheckUserLogin(token);
-    }
-
+   
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
-        StateHasChanged();
+        
     }
 
 

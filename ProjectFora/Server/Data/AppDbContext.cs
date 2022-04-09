@@ -18,6 +18,17 @@ namespace ProjectFora.Server.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Seed data to database
+            modelBuilder.Entity<InterestModel>()
+                .HasData(new InterestModel() { Id = 1, Name = "Games" },
+                new InterestModel() { Id = 2, Name = "Sports" },
+                new InterestModel() { Id = 3, Name = "Politics" },
+                new InterestModel() { Id = 4, Name = "Religion" },
+                new InterestModel() { Id = 5, Name = "Design" },
+                new InterestModel() { Id = 6, Name = "Garden" },
+                new InterestModel() { Id = 7, Name = "Technology" },
+                new InterestModel() { Id = 8, Name = "Pets" });
+
             // Many to many (users can have many interests that in turns have many users)
             modelBuilder.Entity<UserInterestModel>()
                 .HasKey(ui => new { ui.UserId, ui.InterestId });

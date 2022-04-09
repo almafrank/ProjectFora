@@ -49,20 +49,8 @@ namespace ProjectFora.Server.Controllers
 
 
 
-        // DELETE , user delete a interest:
-        [HttpDelete("DeleteUserinterest:{id}")]
-        public async Task<UserInterestModel> UserDeleteInterest(int InterestId)
-        {
-
-            {
-                var deleteUserInterest = _context.UserInterests.FirstOrDefault(x => x.InterestId == InterestId);
-                if (deleteUserInterest != null)
-                {
-                    _context.UserInterests.Remove(deleteUserInterest);
-                    _context.SaveChanges();
-                }
-
-            }
-        }
+        //// DELETE , user delete a interest:
+        //[HttpDelete("DeleteUserinterest:{id}")]
+        
     }
 }

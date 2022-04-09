@@ -30,8 +30,8 @@ namespace ProjectFora.Server.Controllers
         [HttpPost("PostMessage")]
         public async Task Post([FromBody] MessageModel postMessage)
         {
-            _context.Messages.Add(postMessage);
-            _context.SaveChanges();
+             _context.Messages.Add(postMessage);
+             _context.SaveChanges();
         }
 
         

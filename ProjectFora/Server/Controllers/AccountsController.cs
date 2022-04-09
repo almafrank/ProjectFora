@@ -15,16 +15,18 @@ namespace ProjectFora.Server.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly AuthDbContext _context;
+        private readonly AppDbContext _appDbContext;
 
         private UserAccount User { get; set; } = new();
         
-        public AccountsController(SignInManager<ApplicationUser> signInManager, AuthDbContext context)
+        public AccountsController(SignInManager<ApplicationUser> signInManager, AuthDbContext context,AppDbContext appDbContext)
         {
             _signInManager = signInManager;
             _context = context;
+            _appDbContext = appDbContext;
         }
         [HttpPost("Registration")]
-        public async Task<ActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
+        public async Task<ActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration,AccountUserModel adduser)
         {
             //måste kolla så att inte användaren redan finns på databasen
 
@@ -36,6 +38,8 @@ namespace ProjectFora.Server.Controllers
             var user = new ApplicationUser { UserName = userForRegistration.Email, Email = userForRegistration.Email };
 
             await _signInManager.UserManager.CreateAsync(user, userForRegistration.Password);
+            _appDbContext.Users.Add(adduser);
+            _appDbContext.SaveChanges();
             return Ok();
         }
 
@@ -115,6 +119,22 @@ namespace ProjectFora.Server.Controllers
 
         //}
 
+
+        //[HttpPost]
+        //[Route("adduser")]
+        //public async Task<ActionResult> AddUser([FromBody] AccountUserModel adduser)
+        //{
+             
+        //    if (adduser != null)
+        //    {
+               
+        //        _appDbContext.Users.Add(adduser);
+        //        return Ok();
+        //    }
+
+        //    return BadRequest("User not found");
+
+        //}
         //mAP minimal api
         //[HttpGet("currentUser")]
         //public async Task<UserForLoginDto> GetCurrentUser()

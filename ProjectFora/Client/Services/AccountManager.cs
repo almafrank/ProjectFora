@@ -7,7 +7,7 @@ namespace ProjectFora.Client.Services
 {
     public interface IAccountManager
     {
-        Task RegisterUser(UserForRegistrationDto userForRegistration);
+        Task RegisterUser(UserForRegistrationDto userForRegistration,AccountUserModel adduser);
         Task Login(LoginModel loginModel);
         Task Logout();
         Task ChangePassword(RegisterModel user, string token);
@@ -28,12 +28,16 @@ namespace ProjectFora.Client.Services
             _localStorageService = localStorageService;
         }
 
-        public async Task RegisterUser(UserForRegistrationDto userForRegistration)
+        public async Task RegisterUser(UserForRegistrationDto userForRegistration,AccountUserModel adduser)
         {
             //Måste kolla så att inte användaren redan finns på databasen
             if(userForRegistration != null)
             {
+                
+                adduser.Username = userForRegistration.Email; 
                 var result = await _httpClient.PostAsJsonAsync("accounts/registration", userForRegistration);
+              
+
             }
         }
 

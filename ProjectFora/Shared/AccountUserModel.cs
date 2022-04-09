@@ -11,7 +11,7 @@ namespace ProjectFora.Shared
         //hämtar användare från db och include()
         public int Id { get; set; }
         public string Username { get; set; } = String.Empty;
-        public string Email { get; set; }
+        public string Email { get; set; }= String.Empty;    
         public string Token { get; set; } = String.Empty;
         public bool IsDeleting { get; set; }
         public bool Banned { get; set; }
