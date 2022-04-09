@@ -18,23 +18,23 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="test">
+                <span class="oi oi-plus" aria-hidden="true"></span> TestProfile
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
             <NavLink class="nav-link" href="registerUser">
                 <span class="oi oi-plus" aria-hidden="true"></span> Register
             </NavLink>
         </div>
         <div>
-            @if (userStatus != null && userStatus.IsLoggedIn)
-            {
-                <NavLink @onlick="ChangeStatus" class="nav-link" href="logout">
-                    <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
-                </NavLink>
-            }
-            else
-            {
-                <NavLink @onlick="ChangeStatus" class="nav-link" href="login">
-                    <span class="oi oi-account-login" aria-hidden="true"></span> Login
-                </NavLink>
-            }
+            <NavLink class="nav-link" href="logout">
+                <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+            </NavLink>
+
+            <NavLink class="nav-link" href="login">
+                <span class="oi oi-account-login" aria-hidden="true"></span> Login
+            </NavLink>
 
         </div>
     </nav>

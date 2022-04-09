@@ -1,31 +1,21 @@
-﻿<h3>ProfileMenu</h3>
+﻿
 
-<div class="@NavMenuCssClass">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="registerUser">
-                <span class="oi oi-plus" aria-hidden="true"></span> My Interests
-            </NavLink>
-            <NavLink @onlick="ChangeStatus" class="nav-link" href="logout">
-                <span class="oi oi-account-logout" aria-hidden="true"></span> Interests
-            </NavLink>
-            <NavLink @onlick="ChangeStatus" class="nav-link" href="login">
-                <span class="oi oi-account-login" aria-hidden="true"></span> Edit
-            </NavLink>
-            <NavLink @onlick="ChangeStatus" class="nav-link" href="login">
-                <span class="oi oi-account-login" aria-hidden="true"></span> My Threads
-            </NavLink>
-        </div>
-    </nav>
+<div class="nav-item px-3">
+    <a class="nav-link" href="registerUser">
+        <span class="oi oi-plus" aria-hidden="true"></span> My Interests
+    </a>
+    <a class="nav-link" href="logout">
+        <span class="oi oi-account-logout" aria-hidden="true"></span> Interests
+    </a>
+    <a class="nav-link" href="login">
+        <span class="oi oi-account-login" aria-hidden="true"></span> Edit
+    </a>
+    <a class="nav-link" href="login">
+        <span class="oi oi-account-login" aria-hidden="true"></span> My Threads
+    </a>
 </div>
 
-@code {
-    private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+@code {
+
 }

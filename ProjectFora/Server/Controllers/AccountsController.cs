@@ -99,15 +99,19 @@ namespace ProjectFora.Server.Controllers
         }
 
         //[HttpPost]
-        //[Route("editUser")]
-        //public async Task<ActionResult> EditUser(LoginModel user)
+        //[Route("edit")]
+        //public async Task<ActionResult> EditUser([FromQuery] string accessToken, LoginModel loginUser)
         //{
-        //    var userDb = await _signInManager.UserManager.FindByEmailAsync(user.Email);
+        //    var user = _signInManager.UserManager.FindByEmailAsync(loginUser.Email);
 
-        //    if(userDb != null)
+        //    if (user != null)
         //    {
-                
+        //        await _signInManager.UserManager.ChangePasswordAsync(user, user, loginUser.Password);
+
+        //        return Ok();
         //    }
+
+        //    return BadRequest("User not found");
 
         //}
 
@@ -123,5 +127,7 @@ namespace ProjectFora.Server.Controllers
             string token = Guid.NewGuid().ToString();
             return token;
         }
+
+       
     }
 }

@@ -10,7 +10,8 @@ namespace ProjectFora.Client.Services
         Task RegisterUser(UserForRegistrationDto userForRegistration);
         Task Login(LoginModel loginModel);
         Task Logout();
-        Task GetCurrentUser();
+        Task ChangePassword(RegisterModel user, string token);
+        Task GetToken();
 
         Task<UserStatusDto> CheckUserLogin(string token);
     }
@@ -54,11 +55,16 @@ namespace ProjectFora.Client.Services
             _navigationManager.NavigateTo("/");
         }
 
-        public async Task GetCurrentUser()
+        public async Task GetToken()
         {
+            // 1. Hämta token från Local Storage
+
+            var token = await _localStorageService.GetItemAsStringAsync("Token");
+            token = token.Replace("\"", "");
+
             //StringContent stringContent = new StringContent();
             //string content = await _httpClient.GetStringAsync();
-            await _httpClient.GetAsync("accounts/currentUser");
+           
         }
 
         public async Task<UserStatusDto> CheckUserLogin(string token)
@@ -76,5 +82,15 @@ namespace ProjectFora.Client.Services
 
             return null;
         }
+
+        public async Task ChangePassword(RegisterModel user, string token)
+        {
+            if(user != null)
+            {
+                await _httpClient.PostAsJsonAsync($"accounts/edit?accessToken={token}", user);
+            }
+        }
+
+  
     }
 }
