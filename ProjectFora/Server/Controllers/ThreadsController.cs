@@ -25,14 +25,14 @@ namespace ProjectFora.Server.Controllers
              return _context.Threads.ToList();
 
         }
-        //// PUT,update a user:  api/<ProfileController>/5
-        //[HttpPut("updateThread:{id}")]
-        //public async Task UpdateThread(int id,ThreadModel thread)
-        //{
-        //    var updateThread = _context.Threads.Where(user => user.Id == id);
-        //    _context.Update(updateThread);
-        //    _context.SaveChanges();
-        //}
+        // PUT,update a user:  api/<ProfileController>/5
+        [HttpPut("updateThread:{id}")]
+        public async Task UpdateThread(int id,ThreadModel thread)
+        {
+            var updateThread = _context.Threads.Where(user => user.Id == id);
+           _context.Update(updateThread);
+            _context.SaveChanges();
+        }
 
         // GET a specifik thread: api/<ThreadsController>/5
         [HttpGet("GetAThread:{id}")]
@@ -42,9 +42,6 @@ namespace ProjectFora.Server.Controllers
             return thread.FirstOrDefault();
         }
 
-
-
-
         // POST a thead:api/<ThreadsController>
         [HttpPost("PostThead")]
         public async Task PostThread( ThreadModel postThread)
@@ -52,9 +49,6 @@ namespace ProjectFora.Server.Controllers
             _context.Threads.Add(postThread);
             _context.SaveChanges();
         }
-
-
-        
 
         // DELETE a thread: api/<ThreadsController>/5
         [HttpDelete("DeleteThread:{id}")]
