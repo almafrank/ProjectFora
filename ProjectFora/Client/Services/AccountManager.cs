@@ -7,12 +7,12 @@ namespace ProjectFora.Client.Services
 {
     public interface IAccountManager
     {
-        Task RegisterUser(UserForRegistrationDto userForRegistration,AccountUserModel adduser);
+        Task RegisterUser(UserForRegistrationDto userForRegistration);
         Task Login(LoginModel loginModel);
         Task Logout();
         Task ChangePassword(RegisterModel user, string token);
         Task GetToken();
-
+        //Task<AccountUserModel> GetCurrentUser();
         Task<UserStatusDto> CheckUserLogin(string token);
     }
     public class AccountManager : IAccountManager
@@ -28,16 +28,15 @@ namespace ProjectFora.Client.Services
             _localStorageService = localStorageService;
         }
 
-        public async Task RegisterUser(UserForRegistrationDto userForRegistration,AccountUserModel adduser)
+        public async Task RegisterUser(UserForRegistrationDto userForRegistration)
         {
             //Måste kolla så att inte användaren redan finns på databasen
             if(userForRegistration != null)
             {
-                
-                adduser.Username = userForRegistration.Email; 
-                var result = await _httpClient.PostAsJsonAsync("accounts/registration", userForRegistration);
-              
+                await _httpClient.PostAsJsonAsync("accounts/registration", userForRegistration);
 
+                //Lägger till username i localstorage för att kunna hämta nuvarande användare
+                await _localStorageService.SetItemAsync("Username", userForRegistration.Email);
             }
         }
 
@@ -56,6 +55,8 @@ namespace ProjectFora.Client.Services
         public async Task Logout()
         {
             await _localStorageService.RemoveItemAsync("Token");
+            await _localStorageService.RemoveItemAsync("Username");
+
             _navigationManager.NavigateTo("/");
         }
 
@@ -94,6 +95,13 @@ namespace ProjectFora.Client.Services
                 await _httpClient.PostAsJsonAsync($"accounts/edit?accessToken={token}", user);
             }
         }
+
+        //public async Task<AccountUserModel> GetCurrentUser()
+        //{
+        //    var username = _localStorageService.GetItemAsStringAsync("Username");
+        //    var result = await _httpClient.GetFromJsonAsync<AccountUserModel>("accounts/getuser");
+        //    return result;
+        //}
 
   
     }

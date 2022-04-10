@@ -26,20 +26,18 @@ namespace ProjectFora.Server.Controllers
             _appDbContext = appDbContext;
         }
         [HttpPost("Registration")]
-        public async Task<ActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration,AccountUserModel adduser)
+        public async Task<ActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
         {
-            //måste kolla så att inte användaren redan finns på databasen
 
             if (_signInManager.UserManager.Users.Any(x => x.Email == userForRegistration.Email))
             {
                 return BadRequest("Username is already taken");
-
             }
+
             var user = new ApplicationUser { UserName = userForRegistration.Email, Email = userForRegistration.Email };
 
             await _signInManager.UserManager.CreateAsync(user, userForRegistration.Password);
-            _appDbContext.Users.Add(adduser);
-            _appDbContext.SaveChanges();
+        
             return Ok();
         }
 

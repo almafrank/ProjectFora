@@ -10,9 +10,9 @@ namespace ProjectFora.Shared.AccountModels
     public class LoginModel
     {
         [Required]
-        public string Email { get; set; }
+        public string Email { get; set; } = String.Empty;
         [Required]
-        public string Password { get; set; }
+        public string Password { get; set; } = String.Empty;
         public string? Token { get; set; }
     }
 }

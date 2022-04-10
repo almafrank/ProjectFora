@@ -9,6 +9,7 @@ namespace ProjectFora.Client.Services
         Task PostAInterest(InterestModel postInterest);
         Task<List<InterestModel>?> UpdateInterest(int id, InterestModel interest);
         Task<InterestModel> DeleteInterest(int id);
+        Task SetUser(AccountUserModel user);
     }
     public class InterestManager : IInterestManager
     {
@@ -32,7 +33,13 @@ namespace ProjectFora.Client.Services
         {
             return await _httpClient.GetFromJsonAsync<List<InterestModel>>("interest/getallInterest");
         }
-
+        public async Task SetUser(AccountUserModel userForRegistration)
+        {
+            if (userForRegistration != null)
+            {
+              var response = await _httpClient.PostAsJsonAsync("Interest", userForRegistration);
+            }
+        }
         public async Task PostAInterest(InterestModel postInterest)
         {
             await _httpClient.PostAsJsonAsync("interest/PostAInterest", postInterest);
@@ -42,11 +49,11 @@ namespace ProjectFora.Client.Services
         {
             var result = await _httpClient.PostAsJsonAsync<InterestModel>($"interest/updateInterest/{id}", interest);
             var updateInterest = await result.Content.ReadFromJsonAsync<List<InterestModel>>();
-            return updateInterest;  
-          
+            return updateInterest;
+
         }
     }
 
-        
-    
+
+
 }

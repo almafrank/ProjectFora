@@ -19,7 +19,7 @@ namespace ProjectFora.Server.Controllers
 
         // GET: 
         [HttpGet("GetMessages")]
-        public async Task<List<MessageModel>>GetAllMessages()
+        public async Task<List<MessageModel>> GetAllMessages()
         {
             return _context.Messages.ToList();
         }

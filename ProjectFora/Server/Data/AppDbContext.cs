@@ -29,6 +29,11 @@ namespace ProjectFora.Server.Data
                 new InterestModel() { Id = 7, Name = "Technology" },
                 new InterestModel() { Id = 8, Name = "Pets" });
 
+            // Make Username unique
+            modelBuilder.Entity<AccountUserModel>()
+                 .HasIndex(b => b.Username)
+                 .IsUnique();
+
             // Many to many (users can have many interests that in turns have many users)
             modelBuilder.Entity<UserInterestModel>()
                 .HasKey(ui => new { ui.UserId, ui.InterestId });

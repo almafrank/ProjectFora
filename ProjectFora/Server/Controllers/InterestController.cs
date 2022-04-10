@@ -31,12 +31,14 @@ namespace ProjectFora.Server.Controllers
             return interest.FirstOrDefault();
         }
 
+
         // POST
-        [HttpPost("PostAInterest")]
-        public async Task PostAInterest(InterestModel postInterest)
+        [HttpPost]
+        public async Task UserUpdate(AccountUserModel postInterest)
         {
-            _context.Interests.Add(postInterest);
+            _context.Users.Add(postInterest);
             _context.SaveChanges();
+           var result = _context.Users.ToList();
         }
 
         // PUT 
