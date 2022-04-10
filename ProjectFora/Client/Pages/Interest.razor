@@ -1,27 +1,53 @@
 ﻿@page "/interest"
-@inject IProfileManager ProfileManager
+@using ProjectFora.Shared;
+@inject IUserInterestManager UserInterestManager
+@inject IInterestManager InterestManager
+@inject IThreadsManager ThreadManager
 @inject NavigationManager NavigationManager
 
 
 <h3>Form-forum Interest:</h3>
-@*
+
+
+{
+  
+
+
 @code {
 
     [Parameter]
+    //UserInterestModel
     public int UserId{ get; set; }
+    //InterestModel
     public int InterestId{ get; set; }
+    public string Name{ get; set; }
+    //ThreadModel
 
-    List<ProjectFora.Shared.UserInterestModel>GetUserInterests = new List<ProjectFora.Shared.UserInterestModel>();
-    List<ProjectFora.Shared.InterestModel>GetInterests = new List<ProjectFora.Shared.InterestModel>();
-    List<UserModel>GetUser = new List<UserModel>();
+
+    List<UserInterestModel>userInterests = new ();
+    List<InterestModel>interests = new ();
+    List<ThreadModel> Threads = new();
 
 
     protected override async Task OnInitializedAsync()
     {
 
-
-        GetInterests = await ProfileManager.GetAllInterest();
-        GetUser = await ProfileManager.GetUser();
+        //hämtar alla interest från interestManager
+        interests = await InterestManager.GetAllInterest();
+        //hämtar alla interest från interestManager
+        userInterests = await UserInterestManager.GetUserInterest();
+        //hämta alla trådar
+        Threads = await ThreadManager.GetAllThreads();
 
     }
-}*@
+    //metod som navigerar till delete controllern i interestManagern
+    void HandleDeleteInterest(int InterestId)
+    {
+        NavigationManager.NavigateTo($"UserInterest/DeleteUserInterest/{InterestId}");
+    }
+    //metod som navigerar till edit/update controllern i InterestManagern
+    void HandleUpdateInterest()
+    {
+        NavigationManager.NavigateTo($"UserInterest/UpdateUserInterest/{InterestId}");
+    }
+}

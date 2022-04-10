@@ -17,40 +17,69 @@ namespace ProjectFora.Server.Controllers
         private readonly AppDbContext _context;
 
         public UserInterestController(AppDbContext appDbContext)
+
         {
             _context = appDbContext;
         }
+
+
+
         // GET: get users all interest
-        [HttpGet("AllUserInterest")]
+        [HttpGet("GetAllUserInterest")]
 
         public async Task<List<UserInterestModel>> GetUserInterest()
         {
 
-            return await _context.UserInterests.ToListAsync();
+            return _context.UserInterests.ToList();
 
         }
 
-        //// GET a singel interest
-        //[HttpGet("GetSingelInterest:{id}")]
-        //public async Task<UserInterestModel> GetSingelInterest( int InterestId)
+        // GET a singel interest
+        [HttpGet("GetSingelInterest:{id}")]
+        public async Task<UserInterestModel> GetSingelInterest( int InterestId)
         
-        //{
-        //    return await _context.UserInterests.FirstOrDefaultAsync(x => x.InterestId == InterestId);   
-        //}
+        {
+            var interest = _context.UserInterests.Where(u => u.InterestId == InterestId);
+            return interest.FirstOrDefault(); ;   
+        }
         
 
         // POST ,user post a new interest:
-        [HttpPost("PostUsernewInterest")]
+        [HttpPost("UserPostnewInterest")]
         public async Task PostUserInterest(UserInterestModel postinterest)
         {
             _context.UserInterests.Add(postinterest);
             _context.SaveChanges();
         }
 
+        [HttpDelete("DeleteUserInterest:{id}")]
+        public async Task DeleteUserInterest(int InterestId)
+        {
+            var userInterest = _context.UserInterests.FirstOrDefault(x => x.InterestId == InterestId);
+            if (userInterest != null)
+            {
+                _context.UserInterests.Remove(userInterest);
+                _context.SaveChanges();
+            }
+        }
+        [HttpPut("UpdateUserInterest")]
+        public async Task UpdateUserInterest(int InterestId)
+        {
+            var updateUserInterest = _context.UserInterests.Where(x => x.InterestId == InterestId);
+            if(updateUserInterest != null)
+            {
+                _context.Update(updateUserInterest);
+                _context.SaveChanges();
+            }
 
 
-        //// DELETE , user delete a interest:
-        //[HttpDelete("DeleteUserinterest:{id}")]
-        
+            
+        }
+
+
+
+
+
+
     }
 }

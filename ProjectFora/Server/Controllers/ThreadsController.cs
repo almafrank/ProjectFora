@@ -29,7 +29,7 @@ namespace ProjectFora.Server.Controllers
         [HttpPut("updateThread:{id}")]
         public async Task UpdateThread(int id,ThreadModel thread)
         {
-            var updateThread = _context.Threads.Where(user => user.Id == id);
+            var updateThread = _context.Threads.Where(x => x.Id == id);
            _context.Update(updateThread);
             _context.SaveChanges();
         }

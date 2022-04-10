@@ -7,7 +7,7 @@ namespace ProjectFora.Client.Services
         Task<List<InterestModel>> GetAllInterest();
         Task<InterestModel> GetAInterest(int id);
         Task PostAInterest(InterestModel postInterest);
-        Task<List<InterestModel>?> UpdateInterest(int id, InterestModel interest);
+        Task<List<InterestModel>> UpdateInterest(int id, InterestModel interest);
         Task<InterestModel> DeleteInterest(int id);
         Task SetUser(AccountUserModel user);
         //Task<AccountUserModel> CurrentUser(string email);
