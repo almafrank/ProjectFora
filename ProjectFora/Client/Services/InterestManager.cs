@@ -36,7 +36,12 @@ namespace ProjectFora.Client.Services
 
         public async Task<List<InterestModel>> GetAllInterest()
         {
-            return await _httpClient.GetFromJsonAsync<List<InterestModel>>("interest/getallInterest");
+            var result = await _httpClient.GetFromJsonAsync<List<InterestModel>>("interest/getallInterest");
+            if(result != null)
+            {
+                return result;
+            }
+            return null;
         }
         public async Task SetUser(AccountUserModel userForRegistration)
         {

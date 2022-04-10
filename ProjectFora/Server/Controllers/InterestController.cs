@@ -47,10 +47,10 @@ namespace ProjectFora.Server.Controllers
         
         // POST
         [HttpPost]
-        public async Task UserUpdate(AccountUserModel postInterest)
+        public async Task CreateUser(AccountUserModel user)
         {
             // Lägger till användare i AppDbContext
-            _context.Users.Add(postInterest);
+            _context.Users.Add(user);
             _context.SaveChanges();
         }
 
