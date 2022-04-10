@@ -15,6 +15,19 @@ namespace ProjectFora.Server.Controllers
         {
             _context = appDbContext;
         }
+
+        // GET: 
+        [HttpGet("currentuser")]
+        public async Task<AccountUserModel> CurrentUser(string email)
+        {
+            var result = _context.Users.FirstOrDefault(x => x.Username == email);
+            if(result != null)
+            {
+                return result;
+            }
+            return null;
+
+        }
         // GET: 
         [HttpGet("GetAllInterest")]
         public async Task<List<InterestModel>> GetAllInterest()
@@ -34,15 +47,11 @@ namespace ProjectFora.Server.Controllers
         
         // POST
         [HttpPost]
-        public async Task<AccountUserModel> UserUpdate(AccountUserModel postInterest)
+        public async Task UserUpdate(AccountUserModel postInterest)
         {
             // Lägger till användare i AppDbContext
             _context.Users.Add(postInterest);
             _context.SaveChanges();
-
-            // Skickar tillbaka nuvarande användare
-            var user = _context.Users.Where(x => x.Username == postInterest.Username).FirstOrDefault();
-            return user;
         }
 
         // PUT 

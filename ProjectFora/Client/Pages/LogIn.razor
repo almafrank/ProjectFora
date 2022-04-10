@@ -30,6 +30,7 @@
     private async void HandleLogin()
     {
         await AccountManager.Login(loginModel);
+        
         StateHasChanged();
         NavigationManager.NavigateTo("/");
     }

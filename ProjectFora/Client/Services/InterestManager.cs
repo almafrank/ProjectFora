@@ -10,14 +10,19 @@ namespace ProjectFora.Client.Services
         Task<List<InterestModel>?> UpdateInterest(int id, InterestModel interest);
         Task<InterestModel> DeleteInterest(int id);
         Task SetUser(AccountUserModel user);
+        //Task<AccountUserModel> CurrentUser(string email);
     }
     public class InterestManager : IInterestManager
     {
         private readonly HttpClient _httpClient;
-        public InterestManager(HttpClient httpClient)
+        private readonly ILocalStorageService _localStorage;
+
+        public InterestManager(HttpClient httpClient, ILocalStorageService localStorage)
         {
             _httpClient = httpClient;
+            _localStorage = localStorage;
         }
+        public AccountUserModel User { get; set; } = new();
 
         public async Task<InterestModel> DeleteInterest(int id)
         {
@@ -37,7 +42,8 @@ namespace ProjectFora.Client.Services
         {
             if (userForRegistration != null)
             {
-              var response = await _httpClient.PostAsJsonAsync("Interest", userForRegistration);
+                var response = await _httpClient.PostAsJsonAsync<AccountUserModel>("Interest", userForRegistration);
+
             }
         }
         public async Task PostAInterest(InterestModel postInterest)
@@ -52,6 +58,16 @@ namespace ProjectFora.Client.Services
             return updateInterest;
 
         }
+        //public async Task<AccountUserModel> CurrentUser(string email)
+        //{
+        //    //if (email != null)
+        //    //{
+  
+        //        //var result = await _httpClient.GetFromJsonAsync<AccountUserModel>("interest/currentuser");
+        //        //return result;
+        //    //}
+        //    //return null;
+        //}
     }
 
 

@@ -73,7 +73,11 @@
         AddUser.Username = registerUser.Email;
         await Intererestmanager.SetUser(AddUser);
 
+        AddUser.Interests.Add(new InterestModel { Name = "Fantasy" });
+        int x = 0;
         NavigationManager.NavigateTo("/login");
+
+
 
     }
 
