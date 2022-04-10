@@ -35,8 +35,7 @@ namespace ProjectFora.Client.Services
             {
                 await _httpClient.PostAsJsonAsync("accounts/registration", userForRegistration);
 
-                //Lägger till username i localstorage för att kunna hämta nuvarande användare
-                await _localStorageService.SetItemAsync("Username", userForRegistration.Email);
+               
             }
         }
 
@@ -48,6 +47,10 @@ namespace ProjectFora.Client.Services
             if (token != null)
             {
                 await _localStorageService.SetItemAsync("Token", token);
+
+                //Lägger till username i localstorage för att kunna hämta nuvarande användare
+                await _localStorageService.SetItemAsync("Username", loginModel.Email);
+
                 _navigationManager.NavigateTo("/");
             }
         }
@@ -95,14 +98,5 @@ namespace ProjectFora.Client.Services
                 await _httpClient.PostAsJsonAsync($"accounts/edit?accessToken={token}", user);
             }
         }
-
-        //public async Task<AccountUserModel> GetCurrentUser()
-        //{
-        //    var username = _localStorageService.GetItemAsStringAsync("Username");
-        //    var result = await _httpClient.GetFromJsonAsync<AccountUserModel>("accounts/getuser");
-        //    return result;
-        //}
-
-  
     }
 }

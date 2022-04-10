@@ -31,14 +31,18 @@ namespace ProjectFora.Server.Controllers
             return interest.FirstOrDefault();
         }
 
-
+        
         // POST
         [HttpPost]
-        public async Task UserUpdate(AccountUserModel postInterest)
+        public async Task<AccountUserModel> UserUpdate(AccountUserModel postInterest)
         {
+            // Lägger till användare i AppDbContext
             _context.Users.Add(postInterest);
             _context.SaveChanges();
-           var result = _context.Users.ToList();
+
+            // Skickar tillbaka nuvarande användare
+            var user = _context.Users.Where(x => x.Username == postInterest.Username).FirstOrDefault();
+            return user;
         }
 
         // PUT 
