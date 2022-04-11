@@ -29,27 +29,21 @@
                 <InputText Id="confirmPassword" type="password" class="form-control" @bind-Value="registerUser.ConfirmPassword" />
                 <ValidationMessage For="@(() => registerUser.ConfirmPassword)" />
             </div>
+            <div>
+                <h1>Interests</h1>
+                <div class="form-check">
+                    @foreach (var interest in Interests)
+                    {
+                        <input class="form-check-input" type="checkbox" @bind-value="AddUser.Interests" /> @interest.Name
+                    }
+                </div>
+            </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
     </div>
 </div>
 
-<div>
 
-
-    <h1>Interests - choose 1 - 5</h1><div class="col-lg-6 p-3 d-flex">
-
-
-        @foreach (var interest in Interests)
-        {
-            <div>
-                <input type="checkbox" />
-
-                @interest.Name
-            </div>
-        }
-    </div>
-</div>
 
 
 
@@ -58,7 +52,6 @@
 
     private UserForRegistrationDto registerUser = new UserForRegistrationDto();
     public List<InterestModel> Interests { get; set; } = new();
-    public List<UserInterestModel> MyProperty { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -72,11 +65,10 @@
         // Skapar en användare i FloraForum databasen.
         AddUser.Username = registerUser.Email;
         await Intererestmanager.SetUser(AddUser);
-       
-     
+
+
+
         NavigationManager.NavigateTo("/login");
-
-
 
     }
 

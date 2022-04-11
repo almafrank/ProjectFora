@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProjectFora.Server.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -20,14 +21,12 @@ namespace ProjectFora.Server.Controllers
         [HttpGet("currentuser")]
         public async Task<ActionResult<AccountUserModel>> CurrentUser([FromQuery]string email)
         {
-
-            var result = _context.Users.FirstOrDefault(x => x.Username == email);
-
+            // La till Include()  Interest
+            var result = _context.Users.Include(x => x.Interests).ToList().FirstOrDefault(x => x.Username == email);
 
             if (result != null)
             {
-            
-
+                
                 return Ok(result);
             }
 

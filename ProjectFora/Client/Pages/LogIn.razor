@@ -35,7 +35,7 @@
         await AccountManager.Login(loginModel);
         var userEmail = await LocalStorage.GetItemAsStringAsync("Username");
         userEmail = userEmail.Replace("\"", "");
-       CurrentUser = await InterestManager.CurrentUser(userEmail);
+        CurrentUser = await InterestManager.CurrentUser(userEmail);
 
         StateHasChanged();
         NavigationManager.NavigateTo("/");
