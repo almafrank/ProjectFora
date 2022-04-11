@@ -43,7 +43,7 @@ else
         userStatus = await AccountManager.CheckUserLogin(token);
         userEmail = await LocalStorage.GetItemAsStringAsync("Username");
          userEmail = userEmail.Replace("\"", "");
-        //User = await InterestManager.CurrentUser(userEmail);
+        User = await InterestManager.CurrentUser(userEmail);
 
     }
 

@@ -18,15 +18,20 @@ namespace ProjectFora.Server.Controllers
 
         // GET: 
         [HttpGet("currentuser")]
-        public async Task<AccountUserModel> CurrentUser(string email)
+        public async Task<ActionResult<AccountUserModel>> CurrentUser([FromQuery]string email)
         {
-            var result = _context.Users.FirstOrDefault(x => x.Username == email);
-            if(result != null)
-            {
-                return result;
-            }
-            return null;
 
+            var result = _context.Users.FirstOrDefault(x => x.Username == email);
+
+
+            if (result != null)
+            {
+            
+
+                return Ok(result);
+            }
+
+            return BadRequest("User not found");
         }
         // GET: 
         [HttpGet("GetAllInterest")]

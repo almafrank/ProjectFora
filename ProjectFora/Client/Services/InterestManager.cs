@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using Newtonsoft.Json;
+using System.Net.Http.Json;
 
 namespace ProjectFora.Client.Services
 {
@@ -10,7 +11,7 @@ namespace ProjectFora.Client.Services
         Task<List<InterestModel>> UpdateInterest(int id, InterestModel interest);
         Task<InterestModel> DeleteInterest(int id);
         Task SetUser(AccountUserModel user);
-        //Task<AccountUserModel> CurrentUser(string email);
+        Task<AccountUserModel> CurrentUser(string email);
     }
     public class InterestManager : IInterestManager
     {
@@ -63,16 +64,22 @@ namespace ProjectFora.Client.Services
             return updateInterest;
 
         }
-        //public async Task<AccountUserModel> CurrentUser(string email)
-        //{
-        //    //if (email != null)
-        //    //{
-  
-        //        //var result = await _httpClient.GetFromJsonAsync<AccountUserModel>("interest/currentuser");
-        //        //return result;
-        //    //}
-        //    //return null;
-        //}
+        public async Task<AccountUserModel> CurrentUser(string email)
+        {
+            if (email != null)
+            {
+                var response = await _httpClient.GetAsync($"interest/currentuser?email={email}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+
+                    var data = JsonConvert.DeserializeObject<AccountUserModel>(result);
+
+                    return data;
+                }
+            }
+            return null;
+        }
     }
 
 

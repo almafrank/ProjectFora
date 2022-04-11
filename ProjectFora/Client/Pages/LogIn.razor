@@ -2,6 +2,8 @@
 @using ProjectFora.Shared.AccountModels
 @inject IAccountManager AccountManager
 @inject NavigationManager NavigationManager
+@inject IInterestManager InterestManager
+@inject ILocalStorageService LocalStorage
 
 <div class="card">
     <h4 class="card-header">Login</h4>
@@ -26,11 +28,15 @@
 
 @code {
     private LoginModel loginModel = new LoginModel();
+    public AccountUserModel CurrentUser { get; set; }
 
     private async void HandleLogin()
     {
         await AccountManager.Login(loginModel);
-        
+        var userEmail = await LocalStorage.GetItemAsStringAsync("Username");
+        userEmail = userEmail.Replace("\"", "");
+       CurrentUser = await InterestManager.CurrentUser(userEmail);
+
         StateHasChanged();
         NavigationManager.NavigateTo("/");
     }
