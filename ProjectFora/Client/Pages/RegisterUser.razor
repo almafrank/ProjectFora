@@ -1,9 +1,10 @@
 ﻿@page "/registerUser"
 @inject HttpClient httpClient
 
-@inject IAccountManager UserManager
+@inject IAccountManager AccountManager
 @inject NavigationManager NavigationManager
 @inject IInterestManager Intererestmanager
+@inject IUserManager UserManager
 
 <h3>Register</h3>
 
@@ -30,17 +31,17 @@
                 <ValidationMessage For="@(() => registerUser.ConfirmPassword)" />
             </div>
             <div>
-                <h1>Interests</h1>
-                <div class="form-check">
-                    @foreach (var interest in Interests)
-                    {
-                        <input class="form-check-input" type="checkbox" @bind-value="AddUser.Interests" /> @interest.Name
-                    }
-                </div>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
     </div>
+
+    <h1>Interests</h1>
+    @foreach (var interest in Interests)
+    {
+        <input type="checkbox" /> @interest.Name
+    }
+
 </div>
 
 
@@ -49,9 +50,10 @@
 
 @code {
     public AccountUserModel AddUser { get; set; } = new();
-
-    private UserForRegistrationDto registerUser = new UserForRegistrationDto();
     public List<InterestModel> Interests { get; set; } = new();
+    public List<InterestModel> UserInterests { get; set; } = new();
+    private UserForRegistrationDto registerUser = new UserForRegistrationDto();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,16 +62,21 @@
     public async Task HandleRegistration()
     {
         // Skapar en användare till IdentityFlora databasen
-        await UserManager.RegisterUser(registerUser);
+        await AccountManager.RegisterUser(registerUser);
 
         // Skapar en användare i FloraForum databasen.
         AddUser.Username = registerUser.Email;
         await Intererestmanager.SetUser(AddUser);
 
+        var currentUser = await Intererestmanager.CurrentUser(registerUser.Email);
+        
 
+        //await UserManager.UpdateUserInterests(UserInterests, AddUser);
 
-        NavigationManager.NavigateTo("/login");
-
+        //Int id
+        //name
     }
+
+
 
 }

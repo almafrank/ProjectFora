@@ -15,6 +15,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<IAccountManager, AccountManager>();
 builder.Services.AddScoped<IInterestManager, InterestManager>();
 builder.Services.AddScoped<IProfileManager, ProfileManager>();
+builder.Services.AddScoped<IUserManager, UserManager>();
 builder.Services.AddOptions();
 builder.Services.AddBlazoredLocalStorage();
 

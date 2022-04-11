@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProjectFora.Server.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -23,7 +24,11 @@ namespace ProjectFora.Server.Controllers
             // Skickar tillbaka nuvarande användare
             if(userModel != null)
             {
-                var user = _context.Users.Where(x => x.Username == userModel.Username).FirstOrDefault();
+                var user = _context.Users
+                    .Include(u => u.UserInterests)
+                    .Include(ui=> ui.Interests)
+                    .Where(x => x.Username == userModel.Username).FirstOrDefault();
+
                 if(user != null)
                 {
                     return user;
@@ -55,17 +60,18 @@ namespace ProjectFora.Server.Controllers
         }
 
         // PUT 
-        [HttpPut("UpdateInterest:{id}")]
-        public async Task UpdateInterest(InterestModel interest)
-        {
-            var updateInterest = _context.Interests.Where(x => x.Id == interest.Id).FirstOrDefault();
-            if(updateInterest != null)
-            {
-                updateInterest = interest;
-                _context.Update(updateInterest);
-                _context.SaveChanges();
-            }
-        }
+        //[HttpPut("UpdateInterest")]
+        //public async Task UpdateInterest(List<InterestModel> interests, AccountUserModel user)
+        //{
+        //    var userToAddInterest = _context.Users.Where(x => x.Username == user.Username).FirstOrDefault();
+
+        //    if(userToAddInterest != null)
+        //    {
+        //        userToAddInterest = user;
+        //        _context.Update(userToAddInterest);
+        //        _context.SaveChanges();
+        //    }
+        //}
 
         // DELETE 
         [HttpDelete("DeleteInterest:{id}")]

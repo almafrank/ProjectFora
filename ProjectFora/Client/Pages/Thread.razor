@@ -1,0 +1,27 @@
+﻿@page "/thread"
+@inject IUserManager UserManager
+
+<h3>Create a new message</h3>
+
+
+<EditForm Model=@newMessage OnValidSubmit="CreateNewMessage">
+    <div class="form-group">
+        <label for="message">Message</label>
+        <InputText class="form-control" id="message" @bind-Value="newMessage.Message"/>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+
+
+</EditForm>
+
+
+    @code {
+        private MessageModel newMessage = new();
+
+        void CreateNewMessage()
+        {
+            UserManager.Post(newMessage);
+        }
+
+
+}
