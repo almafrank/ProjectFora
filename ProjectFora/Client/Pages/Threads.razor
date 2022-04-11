@@ -28,7 +28,7 @@
 
 
     List<ThreadModel> GetThreads = new();
-    List<MessageModel> GetMessages = new();
+    List<MessageModel> Messages = new();
     
 
     protected override async Task OnInitializedAsync()
@@ -37,23 +37,23 @@
         //hämtar alla interest från interestManager
         GetThreads = await ThreadManager.GetAllThreads();
         //hämtar alla interest från interestManager
-        GetMessages = await Message.GetAllMessages();
+        Messages = await Message.GetAllMessages();
         
     }
     //metod att hämta tråd när söker på-klicka och gå in på en tråd...
     void GetAThread(int Id)
     {
-        NavigationManager.NavigateTo($"Use/DeleteUserInterest/{Id}");
+        NavigationManager.NavigateTo($"//{Id}");
     }
     //metod att ta bort en tråd när man klickar
     void DeleteAThread(int Id)
     {
-        NavigationManager.NavigateTo($"UserInterest/DeleteUserInterest/{Id}");
+        NavigationManager.NavigateTo($"/{Id}");
     }
-    //metod som updaterar en tråd när man klickar
+    //metod som updaterar/edit en tråd när man klickar
     void UpdateAThread(int Id)
     {
-        NavigationManager.NavigateTo($"UserInterest/DeleteUserInterest/{Id}");
+        NavigationManager.NavigateTo($"//{Id}");
     }
 
 

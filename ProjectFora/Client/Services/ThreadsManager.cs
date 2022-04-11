@@ -4,6 +4,7 @@ namespace ProjectFora.Client.Services
 {
     public interface IThreadsManager
     {
+        //
         Task PostThread(ThreadModel postThread);
 
         Task<ThreadModel> DeleteThread(int id);
