@@ -19,7 +19,7 @@ namespace ProjectFora.Server.Controllers
 
         // GET: 
         [HttpGet("currentuser")]
-        public async Task<ActionResult<AccountUserModel>> CurrentUser([FromQuery]string email)
+        public async Task<ActionResult<UserModel>> CurrentUser([FromQuery]string email)
         {
             // La till Include()  Interest
             var result = _context.Users.Include(x => x.Interests).ToList().FirstOrDefault(x => x.Username == email);
@@ -51,7 +51,7 @@ namespace ProjectFora.Server.Controllers
         
         // POST
         [HttpPost]
-        public async Task CreateUser(AccountUserModel user)
+        public async Task CreateUser(UserModel user)
         {
             // Lägger till användare i AppDbContext
             _context.Users.Add(user);

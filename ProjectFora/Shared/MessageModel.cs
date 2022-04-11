@@ -21,6 +21,6 @@ namespace ProjectFora.Shared
 
         [ForeignKey(nameof(User))]
         public int? UserId { get; set; }
-        public AccountUserModel? User { get; set; }
+        public UserModel? User { get; set; }
     }
 }

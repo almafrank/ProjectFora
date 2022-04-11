@@ -27,7 +27,7 @@ else
     // 4. Stämmer? Skicka tillbaka en bool "isLoggedIn"
 
     private UserStatusDto? userStatus;
-    public AccountUserModel User { get; set; } = new();
+    public UserModel User { get; set; } = new();
     public string userEmail { get; set; }
 
     protected override async Task OnInitializedAsync()
