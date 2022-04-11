@@ -6,7 +6,7 @@ using ProjectFora.Server.Data;
 
 namespace ProjectFora.Server.Controllers
 {
-    [Route("Message")]
+    [Route("api/[controller]")]
     [ApiController]
     public class MessageController : ControllerBase
     {
@@ -27,8 +27,8 @@ namespace ProjectFora.Server.Controllers
         
 
         // POST 
-        [HttpPost("PostMessage")]
-        public async Task Post([FromBody] MessageModel postMessage)
+        [HttpPost]
+        public void Post(MessageModel postMessage)
         {
              _context.Messages.Add(postMessage);
              _context.SaveChanges();
