@@ -47,7 +47,9 @@
     {
         //interests = await InterestManager.GetAllInterest();
 
-       User = await UserManager.GetCurrentUser();
+       var result = await UserManager.GetCurrentUser();
+
+     
 
 
         //threads = await ThreadManager.GetAllThreads();
