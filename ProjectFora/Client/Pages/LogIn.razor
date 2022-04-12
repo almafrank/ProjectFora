@@ -1,6 +1,5 @@
 ﻿@page "/login"
-@using ProjectFora.Shared.AccountModels
-@inject IAccountManager AccountManager
+@inject IUserManager UserManager
 @inject NavigationManager NavigationManager
 @inject IInterestManager InterestManager
 @inject ILocalStorageService LocalStorage
@@ -31,7 +30,7 @@
 
     private async void HandleLogin()
     {
-        await AccountManager.Login(loginModel);
+        await UserManager.Login(loginModel);
         var userEmail = await LocalStorage.GetItemAsStringAsync("Username");
         userEmail = userEmail.Replace("\"", "");
        

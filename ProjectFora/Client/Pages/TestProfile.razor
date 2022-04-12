@@ -1,5 +1,5 @@
 ﻿@page "/test"
-@inject IAccountManager AccountManager
+@inject IUserManager UserManager
 <h3>TestProfile</h3>
 
   <h3>Change Password</h3>
@@ -42,7 +42,7 @@
 
     public async void ChangePassword()
     {
-        var token = AccountManager.GetToken();
+        var token = UserManager.GetToken();
         //await AccountManager.ChangePassword(user, token);
     }
 }

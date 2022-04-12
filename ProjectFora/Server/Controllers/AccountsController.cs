@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProjectFora.Server.Data;
 using ProjectFora.Server.Models;
-using ProjectFora.Shared;
-using ProjectFora.Shared.AccountModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,16 +16,16 @@ namespace ProjectFora.Server.Controllers
         private readonly AuthDbContext _context;
         private readonly AppDbContext _appDbContext;
 
-        private UserAccount User { get; set; } = new();
-        
         public AccountsController(SignInManager<ApplicationUser> signInManager, AuthDbContext context,AppDbContext appDbContext)
         {
             _signInManager = signInManager;
             _context = context;
             _appDbContext = appDbContext;
         }
+
+        //Fungerar
         [HttpPost("Registration")]
-        public async Task<ActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
+        public async Task<ActionResult> RegisterUser([FromBody] Shared.RegisterModel userForRegistration)
         {
 
             if (_signInManager.UserManager.Users.Any(x => x.Email == userForRegistration.Email))
@@ -41,9 +40,9 @@ namespace ProjectFora.Server.Controllers
             return Ok();
         }
 
-   
+   //Fungerar
         [HttpPost]
-        [Route("login")]
+        [Route("loginuser")]
         public async Task<ActionResult> Login(LoginModel user)
         {
             var userDb = await _signInManager.UserManager.FindByEmailAsync(user.Email);
@@ -68,8 +67,8 @@ namespace ProjectFora.Server.Controllers
 
             return BadRequest("User not found");
         }
-        //updateasync
 
+        //Fungerar
         [HttpGet]
         [Route("check")]
         public async Task<ActionResult<UserStatusDto>> CheckUserLogin([FromQuery] string accessToken)
@@ -92,60 +91,51 @@ namespace ProjectFora.Server.Controllers
             return BadRequest("User not found");
         }
 
-        [HttpGet]
-        [Route("logout")]
-        public async Task Logout()
+        //Fungerar
+        [HttpPut]
+        [Route("edit")]
+        public async Task<ActionResult> ChangePassword([FromQuery] string accessToken, EditPasswordModel editUser)
         {
+            var user = await _signInManager.UserManager.FindByEmailAsync(editUser.Email);
 
-          await _signInManager.SignOutAsync();
+            if (user != null)
+            {
+               await _signInManager.UserManager.ChangePasswordAsync(user, editUser.CurrentPassword, editUser.NewPassword  );
+
+                return Ok();
+            }
+
+            return BadRequest("User not found");
+
         }
 
-        //[HttpPost]
-        //[Route("edit")]
-        //public async Task<ActionResult> EditUser([FromQuery] string accessToken, LoginModel loginUser)
-        //{
-        //    var user = _signInManager.UserManager.FindByEmailAsync(loginUser.Email);
+        // GET: 
+        [HttpGet("CurrentUser")]
+        public async Task<UserModel> GetCurrentUser(string email)
+        {
+            // Skickar tillbaka nuvarande användare
+            if (email != null)
+            {
+                var user = _appDbContext.Users
+                    .Include(u => u.UserInterests)
+                    .Include(ui => ui.Interests)
+                    .Include(t => t.Threads)
+                    .Include(m=> m.Messages)
+                    .Where(x => x.Username == email).FirstOrDefault();
 
-        //    if (user != null)
-        //    {
-        //        await _signInManager.UserManager.ChangePasswordAsync(user, user, loginUser.Password);
+                if (user != null)
+                {
+                    return user;
+                }
+            }
+            return null; ;
+        }
 
-        //        return Ok();
-        //    }
-
-        //    return BadRequest("User not found");
-
-        //}
-
-
-        //[HttpPost]
-        //[Route("adduser")]
-        //public async Task<ActionResult> AddUser([FromBody] AccountUserModel adduser)
-        //{
-             
-        //    if (adduser != null)
-        //    {
-               
-        //        _appDbContext.Users.Add(adduser);
-        //        return Ok();
-        //    }
-
-        //    return BadRequest("User not found");
-
-        //}
-        //mAP minimal api
-        //[HttpGet("currentUser")]
-        //public async Task<UserForLoginDto> GetCurrentUser()
-        //{
-
-        //}
-
+        //Fungerar
         public string GenerateToken()
         {
             string token = Guid.NewGuid().ToString();
             return token;
         }
-
-       
     }
 }

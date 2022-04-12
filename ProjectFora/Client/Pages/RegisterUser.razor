@@ -1,7 +1,4 @@
 ﻿@page "/registerUser"
-@inject HttpClient httpClient
-
-@inject IAccountManager AccountManager
 @inject NavigationManager NavigationManager
 @inject IInterestManager Intererestmanager
 @inject IUserManager UserManager
@@ -44,25 +41,21 @@
 
 </div>
 
-
-
-
-
 @code {
     public UserModel AddUser { get; set; } = new();
     public List<InterestModel> Interests { get; set; } = new();
     public List<InterestModel> UserInterests { get; set; } = new();
-    private UserForRegistrationDto registerUser = new UserForRegistrationDto();
-
+    private RegisterModel registerUser = new RegisterModel();
 
     protected override async Task OnInitializedAsync()
     {
         Interests = await Intererestmanager.GetAllInterest();
     }
+
     public async Task HandleRegistration()
     {
         // Skapar en användare till IdentityFlora databasen
-        await AccountManager.RegisterUser(registerUser);
+        await UserManager.RegisterUser(registerUser);
 
         // Skapar en användare i FloraForum databasen.
         AddUser.Username = registerUser.Email;

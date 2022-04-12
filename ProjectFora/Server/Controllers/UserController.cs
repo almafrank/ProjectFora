@@ -19,7 +19,7 @@ namespace ProjectFora.Server.Controllers
 
         // GET: 
         [HttpGet("CurrentUser")]
-        public async Task<AccountUserModel> GetCurrentUser(AccountUserModel userModel)
+        public async Task<UserModel> GetCurrentUser(UserModel userModel)
         {
             // Skickar tillbaka nuvarande användare
             if(userModel != null)
@@ -52,7 +52,7 @@ namespace ProjectFora.Server.Controllers
         // POST
         [HttpPost]
         [Route("createUser")]
-        public async Task CreateUser(AccountUserModel user)
+        public async Task CreateUser(UserModel user)
         {
             // Lägger till användare i AppDbContext
             _context.Users.Add(user);
