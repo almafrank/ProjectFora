@@ -7,7 +7,10 @@ namespace ProjectFora.Client.Services
         Task PostUserInterest(UserInterestModel postinterest);
         Task<List<UserInterestModel>> GetUserInterest();
         Task DeleteUserInterest(int InterestId);
-        //Task UpdateUserInterest(int InterestId);
+        Task UpdateUserInterest(int InterestId);
+        Task<UserInterestModel> GetSingelInterest(int InterestId);
+
+
 
 
     }
@@ -28,6 +31,11 @@ namespace ProjectFora.Client.Services
             await _httpClient.GetFromJsonAsync<UserInterestModel>($"UserInterest/DeleteUserInterest/{InterestId}");
         }
 
+        public async Task<UserInterestModel> GetSingelInterest(int InterestId)
+        {
+            return await _httpClient.GetFromJsonAsync<UserInterestModel>($"UserInterest/GetUserSingelInterest/{InterestId}");
+        }
+
         public async Task<List<UserInterestModel>> GetUserInterest()
         {
             return await _httpClient.GetFromJsonAsync<List<UserInterestModel>>("UserInterest/GetAllUserInterest");
@@ -38,11 +46,13 @@ namespace ProjectFora.Client.Services
             await _httpClient.PostAsJsonAsync("UserInterest/UserPostnewInterest", postinterest);
         }
 
-        //public async Task<List<UserInterestModel>> UpdateUserInterest(int InterestId)
-        //{
-        //    var result = await _httpClient.PostAsJsonAsync<UserInterestModel>($"UserInterest/UpdateUserInterest/{InterestId}");
-        //    var updateUserInterest = await result.Content.ReadFromJsonAsync<List<UserInterestModel>>();
-        //    return updateUserInterest;
-        //}
+        public async Task UpdateUserInterest(int InterestId)
+        {
+            var result = await _httpClient.PutAsync($"UserInterest/UpdateUserInterest{InterestId}");
+            var updateUserInterest = await result.Content.ReadFromJsonAsync();
+            return updateUserInterest;
+        }
+
+
     }
 }

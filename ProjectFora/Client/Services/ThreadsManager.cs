@@ -13,43 +13,43 @@ namespace ProjectFora.Client.Services
 
         Task<ThreadModel> GetThread(int id);
         
-        Task<List<ThreadModel>> UpdateThread(int id, ThreadModel thread);
+        Task UpdateThread(int id, ThreadModel thread);
 
     }
-    public class ThreadsManager:IThreadsManager
-    {
-        private readonly HttpClient _httpClient;
+    //public class ThreadsManager:IThreadsManager
+    //{
+    //    private readonly HttpClient _httpClient;
       
-        public ThreadsManager(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+    //    public ThreadsManager(HttpClient httpClient)
+    //    {
+    //        _httpClient = httpClient;
+    //    }
 
-        public async Task<ThreadModel> DeleteThread(int id)
-        {
-            return await _httpClient.GetFromJsonAsync<ThreadModel>($"threads/DeleteThread/{id}");
-        }
+    //    public async Task<ThreadModel> DeleteThread(int id)
+    //    {
+    //        return await _httpClient.GetFromJsonAsync<ThreadModel>($"Threads/DeleteThread/{id}");
+    //    }
 
-        public async Task<List<ThreadModel>> GetAllThreads()
-        {
-            return await _httpClient.GetFromJsonAsync<List<ThreadModel>>("threads/AllThreads");
-        }
+    //    public async Task<List<ThreadModel>> GetAllThreads()
+    //    {
+    //        return await _httpClient.GetFromJsonAsync<List<ThreadModel>>("Threads/AllThreads");
+    //    }
 
-        public async Task<ThreadModel> GetThread(int id)
-        {
-            return await _httpClient.GetFromJsonAsync<ThreadModel>($"threads/GetAThread/{id}");
-        }
+    //    public async Task<ThreadModel> GetThread(int id)
+    //    {
+    //        return await _httpClient.GetFromJsonAsync<ThreadModel>($"Threads/GetAThread/{id}");
+    //    }
 
-        public async Task PostThread(ThreadModel postThread)
-        {
-            await _httpClient.PostAsJsonAsync("threads/PostThead", postThread);
-        }
+    //    public async Task PostThread(ThreadModel postThread)
+    //    {
+    //        await _httpClient.PostAsJsonAsync("Threads/PostThead", postThread);
+    //    }
 
-        public async Task<List<ThreadModel>> UpdateThread(int id, ThreadModel thread)
-        {
-            var result = await _httpClient.PostAsJsonAsync<ThreadModel>($"threads/updatethread{id}",thread);
-            var updateThread = await result.Content.ReadFromJsonAsync<List<ThreadModel>>();
-            return updateThread;
-        }
+        //public async Task UpdateThread(int id, ThreadModel thread)
+        //{
+        //    var result = await _httpClient.PostAsync($"Threads/updateThread{id}",thread);
+        //    var updateThread = await result.Content.ReadFromJsonAsync();
+        //    return updateThread;
+        //}
     }
 }

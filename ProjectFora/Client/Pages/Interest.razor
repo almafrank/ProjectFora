@@ -6,18 +6,24 @@
 @inject NavigationManager NavigationManager
 
 
-<h3>Form-forum Interest:</h3>
+<h3>Form-forum Interest Page:</h3>
+@if(userInterests != null)
+{
+    <div>
+        @foreach(var userIn in userInterests)
+        {
+            <ul>
+                <li>@userIn</li>
+
+            </ul>
+        }
+    </div>
+    <div>
+
+    </div>
+}
 
 @code {
-
-    [Parameter]
-    //UserInterestModel
-    public int UserId{ get; set; }
-    //InterestModel
-    public int InterestId{ get; set; }
-    public string Name{ get; set; }
-    //ThreadModel
-
 
     List<UserInterestModel>userInterests = new ();
     List<InterestModel>interests = new ();
@@ -27,28 +33,30 @@
     protected override async Task OnInitializedAsync()
     {
 
-        //hämtar alla interest från interestManager
+        
         interests = await InterestManager.GetAllInterest();
-        //hämtar alla interest från interestManager
+        
         userInterests = await UserInterestManager.GetUserInterest();
-        //hämta alla trådar
+        
+        
         Threads = await ThreadManager.GetAllThreads();
 
     }
-    //metod som navigerar till delete controllern i interestManagern
+    
     void HandleDeleteInterest(int InterestId)
     {
-        NavigationManager.NavigateTo($"UserInterest/DeleteUserInterest/{InterestId}");
+        
     }
-    //metod som navigerar till edit/update controllern i InterestManagern
+    
     void HandleUpdateInterest()
     {
-        NavigationManager.NavigateTo($"UserInterest/UpdateUserInterest/{InterestId}");
+        
     }
 }
 @*Sida: Intressen
 En sida där man kan se intressen man har på sin användare
-FunktionalitetSe intressen man har på sin användare
+Funktionalitet
+Se intressen man har på sin användare
 Se antalet trådar som finns skapade för intresset
 Klicka och gå in på ett intresse
 Ta bort ett intresse om man skapat det

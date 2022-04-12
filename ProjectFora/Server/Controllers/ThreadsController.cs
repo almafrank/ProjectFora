@@ -26,7 +26,7 @@ namespace ProjectFora.Server.Controllers
 
         }
         // PUT,update a user:
-        [HttpPut("updateThread:{id}")]
+        [HttpPut("updateThread")]
         public async Task UpdateThread(int id,ThreadModel thread)
         {
             var updateThread = _context.Threads.Where(x => x.Id == id);
@@ -35,7 +35,7 @@ namespace ProjectFora.Server.Controllers
         }
 
         // GET a specifik thread:
-        [HttpGet("GetAThread:{id}")]
+        [HttpGet("GetAThread")]
         public async Task<ThreadModel> GetThread(int id)
         {
             var thread = _context.Threads.Where(u => u.Id == id);
@@ -51,7 +51,7 @@ namespace ProjectFora.Server.Controllers
         }
 
         // DELETE a thread: 
-        [HttpDelete("DeleteThread:{id}")]
+        [HttpDelete("DeleteThread")]
         public async Task DeleteThread(int id)
         {
             var deleteThread = _context.Threads.FirstOrDefault(x => x.Id == id);
