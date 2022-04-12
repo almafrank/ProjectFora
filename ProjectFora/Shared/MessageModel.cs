@@ -13,6 +13,8 @@ namespace ProjectFora.Shared
         [Key]
         public int Id { get; set; }
         public string Message { get; set; } = String.Empty;
+        public DateTime MessageCreated { get; set; }
+        public string CreatedBy { get; set; } = String.Empty;
 
         // Relations
         [ForeignKey(nameof(Thread))]

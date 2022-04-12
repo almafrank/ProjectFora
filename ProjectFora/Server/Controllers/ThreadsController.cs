@@ -1,72 +1,112 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using ProjectFora.Server.Data;
+using ProjectFora.Server.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ProjectFora.Server.Controllers
 {
-    [Route("Threads")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ThreadsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public ThreadsController(AppDbContext appDbContext)
+        public ThreadsController(AppDbContext appDbContext, SignInManager<ApplicationUser> signInManager)
         {
             _context = appDbContext;
+            _signInManager = signInManager;
         }
 
-
-
-        // GET all threads: api/<ThreadsController>
-        [HttpGet("AllThreads")]
-        public async Task<List<ThreadModel>> GetAllThreads()
+        // GET : Threads
+        [HttpGet]
+        public List<ThreadModel> Get([FromQuery] string token)
         {
-             return _context.Threads.ToList();
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
-        }
-        // PUT,update a user:
-        [HttpPut("updateThread")]
-        public async Task UpdateThread(int id,ThreadModel thread)
-        {
-            var updateThread = _context.Threads.Where(x => x.Id == id);
-           _context.Update(updateThread);
-            _context.SaveChanges();
-        }
-
-        // GET a specifik thread:
-        [HttpGet("GetAThread")]
-        public async Task<ThreadModel> GetThread(int id)
-        {
-            var thread = _context.Threads.Where(u => u.Id == id);
-            return thread.FirstOrDefault();
-        }
-
-        // POST a thead:
-        [HttpPost("PostThread")]
-        public async Task PostThread(ThreadModel postThread)
-        {
-
-            var interest = _context.Interests.FirstOrDefault(i => i.Id == 11);
-            var user = _context.Users.FirstOrDefault(u => u.Id == 1);
-
-            postThread.Interest = interest;
-            postThread.User = user;
-
-            _context.Threads.Add(postThread);
-            _context.SaveChanges();
-        }
-
-        // DELETE a thread: 
-        [HttpDelete("DeleteThread")]
-        public async Task DeleteThread(int id)
-        {
-            var deleteThread = _context.Threads.FirstOrDefault(x => x.Id == id);
-            if (deleteThread != null)
+            if (user != null)
             {
-                _context.Threads.Remove(deleteThread);
+                return _context.Threads.ToList();
+            }
+
+            return null;
+        }
+
+        // GET : Specific thread:
+        [HttpGet("{id}")]
+        public ThreadModel Get([FromRoute] int id, [FromQuery] string token)
+        {
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+
+            if (user != null)
+            {
+                return _context.Threads.FirstOrDefault(t => t.Id == id);
+
+            }
+
+            return null;
+        }
+
+        // POST : Thread
+        [HttpPost]
+        public async Task Post([FromBody] ThreadDto thread, [FromQuery] string token)
+        {
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+            var currentUser = _context.Users.FirstOrDefault(u => u.Username == user.UserName);
+
+            if (currentUser != null)
+            {
+                var interest = _context.Interests.FirstOrDefault(i => i.Id == thread.InterestId);
+
+                if (interest != null)
+                {
+                    var threadToAdd = new ThreadModel()
+                    {
+                        Name = thread.Name,
+                        Interest = interest,
+                        User = currentUser
+                    };
+
+                    _context.Threads.Add(threadToAdd);
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
+
+        // PUT : Edit thread:
+        [HttpPut("{id}")]
+        public void Put([FromRoute] int id, [FromBody] ThreadModel updatedThread, [FromQuery] string token)
+        {
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+
+            if (user != null)
+            {
+                var thread = _context.Threads.FirstOrDefault(t => t.Id == id);
+                thread.Name = updatedThread.Name;
+
+                _context.Update(thread);
                 _context.SaveChanges();
             }
+        }
+
+        // DELETE : Thread 
+        [HttpDelete("{id}")]
+        public void Delete([FromRoute] int id, [FromQuery] string token)
+        {
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+
+            if (user != null)
+            {
+                var deleteThread = _context.Threads.FirstOrDefault(x => x.Id == id);
+                if (deleteThread != null)
+                {
+                    _context.Threads.Remove(deleteThread);
+                    _context.SaveChanges();
+                }
+            }
+     
         }
     }
 }

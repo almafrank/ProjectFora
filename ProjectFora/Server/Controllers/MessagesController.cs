@@ -11,18 +11,18 @@ namespace ProjectFora.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MessageController : ControllerBase
+    public class MessagesController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public MessageController(AppDbContext appDbContext, SignInManager<ApplicationUser> signInManager)
+        public MessagesController(AppDbContext appDbContext, SignInManager<ApplicationUser> signInManager)
         {
             _context = appDbContext;
             _signInManager = signInManager;
         }
 
-        // GET: Messages
+        // GET: All messages
         [HttpGet]
         public List<MessageModel> Get([FromQuery] string token)
         {
@@ -36,7 +36,7 @@ namespace ProjectFora.Server.Controllers
             return null;
         }
 
-        // GET : Specific message
+        // GET : 
         [HttpGet("{id}")]
         public MessageModel Get([FromRoute] int id, [FromQuery] string token)
         {
@@ -55,7 +55,7 @@ namespace ProjectFora.Server.Controllers
             return null;
         }
 
-        // GET : Messages from specific thread
+        // GET : messages from specific thread
         [HttpGet]
         [Route("thread")]
         public List<MessageModel> GetThreadMessages([FromQuery] int id, [FromQuery] string token)
@@ -83,7 +83,7 @@ namespace ProjectFora.Server.Controllers
             return null;
         }
 
-        // POST : Message
+        // POST : message
         [HttpPost]
         public async Task Post([FromBody] MessageModel message, [FromQuery] string token)
         {
@@ -111,7 +111,7 @@ namespace ProjectFora.Server.Controllers
             }
         }
 
-        // PUT : Edit message
+        // PUT : update message
         [HttpPut("{id}")]
         public async Task Put([FromRoute] int id, [FromBody] MessageModel updatedMessage, [FromQuery] string token)
         {
@@ -133,7 +133,7 @@ namespace ProjectFora.Server.Controllers
             }
         }
 
-        // DELETE : Message
+        // DELETE : specific message
         [HttpDelete("{id}")]
         public async Task Delete([FromRoute] int id, [FromQuery] string token)
         {

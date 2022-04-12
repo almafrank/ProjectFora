@@ -10,18 +10,18 @@ namespace ProjectFora.Server.Controllers
 {
     [Route("Interest")]
     [ApiController]
-    public class InterestController : ControllerBase
+    public class InterestsController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public InterestController(AppDbContext appDbContext, SignInManager<ApplicationUser> signInManager)
+        public InterestsController(AppDbContext appDbContext, SignInManager<ApplicationUser> signInManager)
         {
             _context = appDbContext;
             _signInManager = signInManager;
         }
 
-        // GET: All Interests
+        // GET: Interests
         [HttpGet]
         public List<InterestModel> Get()
         {
@@ -55,7 +55,7 @@ namespace ProjectFora.Server.Controllers
             }
         }
 
-        // PUT : Update interest
+        // PUT : Edit Interest
         [HttpPut("{id}")]
         public async Task UpdateInterest(int id, InterestModel interest)
         {
@@ -64,7 +64,7 @@ namespace ProjectFora.Server.Controllers
             await _context.SaveChangesAsync();
         }
 
-        // DELETE 
+        // DELETE : Interest
         [HttpDelete("{id}")]
         public void Delete([FromRoute] int id, [FromQuery] string token)
         {
