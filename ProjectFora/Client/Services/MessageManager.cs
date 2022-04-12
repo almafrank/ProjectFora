@@ -3,34 +3,37 @@ using System.Net.Http.Json;
 
 namespace ProjectFora.Client.Services
 {
-    public interface IMessage
+    public interface IMessageManager
     {
-        Task Post(MessageModel postmessage);
+        Task PostMessage(MessageModel postmessage);
         Task<MessageModel?> DeleteMessage(int id);
         Task<List<MessageModel>> GetAllMessages();
     }
 
-    public class Message : IMessage
+    public class MessageManager : IMessageManager
 
     {
         private readonly HttpClient _httpClient;
 
-        public Message(HttpClient httpClient)
+        public MessageManager(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
-        //ta bort ett meddelande
+
+        // Tar bort ett meddelande
         public async Task<MessageModel?> DeleteMessage(int id)
         {
             return await _httpClient.GetFromJsonAsync<MessageModel>($"message/deletemessage/{id}");
         }
-        //hämta meddelanden
+
+        //Hämtar alla meddelanden
         public async Task<List<MessageModel>> GetAllMessages()
         {
             return await _httpClient.GetFromJsonAsync<List<MessageModel>>("message/GetMessages");
         }
-        //ta bort ett meddelande
-        public async Task Post(MessageModel postmessage)
+        
+        //Lägger till ett meddelande
+        public async Task PostMessage(MessageModel postmessage)
         {
             await _httpClient.PostAsJsonAsync("message/postmessage", postmessage);
         }

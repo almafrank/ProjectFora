@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectFora.Shared
 { 
-    public class AccountUserModel
+    public class UserModel
     {
         //hämtar användare från db och include()
         public int Id { get; set; }

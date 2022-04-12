@@ -26,12 +26,12 @@ namespace ProjectFora.Server.Controllers
 
             if (result != null)
             {
-                
                 return Ok(result);
             }
 
             return BadRequest("User not found");
         }
+
         // GET: 
         [HttpGet("GetAllInterest")]
         public async Task<List<InterestModel>> GetAllInterest()

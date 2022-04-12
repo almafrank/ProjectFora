@@ -1,5 +1,6 @@
 ﻿@page "/thread"
 @inject IUserManager UserManager
+@inject IMessageManager MessageManager
 
 <h3>Create a new message</h3>
 
@@ -20,7 +21,7 @@
 
         void CreateNewMessage()
         {
-            UserManager.Post(newMessage);
+            MessageManager.PostMessage(newMessage);
         }
 
 

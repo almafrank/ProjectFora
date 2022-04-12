@@ -1,5 +1,5 @@
 ﻿@page "/logout"
-@inject IAccountManager AccountManager
+@inject IUserManager UserManager
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorage
 
@@ -11,8 +11,8 @@
 
     private async void Logout()
     {
-        var useremail = await LocalStorage.GetItemAsStringAsync("Username");
-        await AccountManager.Logout();
+        var userEmail = await LocalStorage.GetItemAsStringAsync("Username");
+        await UserManager.Logout();
         NavigationManager.NavigateTo("/login");
     }
 
@@ -22,3 +22,4 @@
     }
 
 }
+

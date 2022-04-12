@@ -1,20 +1,20 @@
 ﻿@inject ILocalStorageService LocalStorage
-@inject IAccountManager AccountManager
 @inject IInterestManager InterestManager
+@inject IUserManager UserManager
 @page "/profile"
 
 <h3>Profile</h3>
 
-@if(userStatus != null && userStatus.IsLoggedIn)
+@if (userStatus != null && userStatus.IsLoggedIn)
 {
     <h1>You only see this because you are logged in</h1>
 
-    @if(userStatus.IsAdmin)
+    @if (userStatus.IsAdmin)
     {
         <h1>You only see this because you are an admin</h1>
     }
 }
-else 
+else
 {
     <h1>Unauthorized</h1>
 }
@@ -34,16 +34,15 @@ else
     {
 
         // 1. Hämta token från Local Storage
-
-        var token = await LocalStorage.GetItemAsStringAsync("Token");
-        token = token.Replace("\"", "");
+        var token = await UserManager.GetToken();
 
         // 2. Skicka den token:en till API:t
 
-        userStatus = await AccountManager.CheckUserLogin(token);
+        userStatus = await UserManager.CheckUserLogin(token);
+
         userEmail = await LocalStorage.GetItemAsStringAsync("Username");
-         userEmail = userEmail.Replace("\"", "");
-        User = await InterestManager.CurrentUser(userEmail);
+        userEmail = userEmail.Replace("\"", "");
+        User = await UserManager.GetCurrentUser(userEmail);
 
     }
 

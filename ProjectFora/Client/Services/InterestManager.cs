@@ -10,8 +10,8 @@ namespace ProjectFora.Client.Services
         Task PostAInterest(InterestModel postInterest);
         Task<List<InterestModel>> UpdateInterest(int id, InterestModel interest);
         Task<InterestModel> DeleteInterest(int id);
-        Task SetUser(AccountUserModel user);
-        Task<AccountUserModel> CurrentUser(string email);
+        Task SetUser(UserModel user);
+        Task<UserModel> CurrentUser(string email);
     }
     public class InterestManager : IInterestManager
     {
@@ -23,7 +23,7 @@ namespace ProjectFora.Client.Services
             _httpClient = httpClient;
             _localStorage = localStorage;
         }
-        public AccountUserModel User { get; set; } = new();
+        public UserModel User { get; set; } = new();
 
         public async Task<InterestModel> DeleteInterest(int id)
         {
@@ -44,11 +44,11 @@ namespace ProjectFora.Client.Services
             }
             return null;
         }
-        public async Task SetUser(AccountUserModel userForRegistration)
+        public async Task SetUser(UserModel userForRegistration)
         {
             if (userForRegistration != null)
             {
-                var response = await _httpClient.PostAsJsonAsync<AccountUserModel>("Interest", userForRegistration);
+                var response = await _httpClient.PostAsJsonAsync<UserModel>("Interest", userForRegistration);
 
             }
         }
@@ -64,7 +64,7 @@ namespace ProjectFora.Client.Services
             return updateInterest;
 
         }
-        public async Task<AccountUserModel> CurrentUser(string email)
+        public async Task<UserModel> CurrentUser(string email)
         {
             if (email != null)
             {
@@ -73,7 +73,7 @@ namespace ProjectFora.Client.Services
                 {
                     var result = await response.Content.ReadAsStringAsync();
 
-                    var data = JsonConvert.DeserializeObject<AccountUserModel>(result);
+                    var data = JsonConvert.DeserializeObject<UserModel>(result);
 
                     return data;
                 }
