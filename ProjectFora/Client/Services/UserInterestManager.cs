@@ -4,14 +4,11 @@ namespace ProjectFora.Client.Services
 {
     public interface IUserInterestManager
     {
-        Task PostUserInterest(UserInterestModel postinterest);
-        Task<List<UserInterestModel>> GetUserInterest();
-        Task DeleteUserInterest(int InterestId);
-        Task UpdateUserInterest(int InterestId);
-        Task<UserInterestModel> GetSingelInterest(int InterestId);
-
-
-
+        Task AddUserInterest(UserInterestModel user);
+        //Task<List<UserInterestModel>> GetUserInterest();
+        //Task DeleteUserInterest(int InterestId);
+        //Task UpdateUserInterest(int InterestId);
+        //Task<UserInterestModel> GetSingelInterest(int InterestId);
 
     }
     public class UserInterestManager : IUserInterestManager
@@ -23,35 +20,44 @@ namespace ProjectFora.Client.Services
             _httpClient = httpClient;
         }
 
-
-
-
-        public async Task DeleteUserInterest(int InterestId)
+        public async Task AddUserInterest(UserInterestModel user)
         {
-            await _httpClient.GetFromJsonAsync<UserInterestModel>($"UserInterest/DeleteUserInterest/{InterestId}");
+            if(user != null)
+            {
+                await _httpClient.PostAsJsonAsync("UserInterest/postUserInterest", user);
+            }
+           
         }
 
-        public async Task<UserInterestModel> GetSingelInterest(int InterestId)
-        {
-            return await _httpClient.GetFromJsonAsync<UserInterestModel>($"UserInterest/GetUserSingelInterest/{InterestId}");
-        }
+
+        //public async Task DeleteUserInterest(int InterestId)
+        //{
+        //    await _httpClient.GetFromJsonAsync<UserInterestModel>($"UserInterest/DeleteUserInterest/{InterestId}");
+        //}
+
+        //public async Task<UserInterestModel> GetSingelInterest(int InterestId)
+        //{
+        //    return await _httpClient.GetFromJsonAsync<UserInterestModel>($"UserInterest/GetUserSingelInterest/{InterestId}");
+        //}
 
         public async Task<List<UserInterestModel>> GetUserInterest()
         {
             return await _httpClient.GetFromJsonAsync<List<UserInterestModel>>("UserInterest/GetAllUserInterest");
         }
 
-        public async Task PostUserInterest(UserInterestModel postinterest)
-        {
-            await _httpClient.PostAsJsonAsync("UserInterest/UserPostnewInterest", postinterest);
-        }
 
-        public async Task UpdateUserInterest(int InterestId)
-        {
-            var result = await _httpClient.PutAsync($"UserInterest/UpdateUserInterest{InterestId}");
-            var updateUserInterest = await result.Content.ReadFromJsonAsync();
-            return updateUserInterest;
-        }
+
+        //public Task UpdateUserInterest(int InterestId)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public async Task UpdateUserInterest(int InterestId)
+        //{
+        //    var result = await _httpClient.PutAsync($"UserInterest/UpdateUserInterest{InterestId}");
+        //    var updateUserInterest = await result.Content.ReadFromJsonAsync();
+        //    return updateUserInterest;
+        //}
 
 
     }

@@ -11,13 +11,12 @@
         <InputText class="form-control" id="message" @bind-Value="newMessage.Message"/>
     </div>
     <button type="submit" class="btn btn-primary">Create</button>
-
-
 </EditForm>
 
 
     @code {
         private MessageModel newMessage = new();
+
 
         void CreateNewMessage()
         {

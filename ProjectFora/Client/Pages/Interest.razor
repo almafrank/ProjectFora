@@ -1,46 +1,56 @@
 ﻿@page "/interest"
 @using ProjectFora.Shared;
-@inject IUserInterestManager UserInterestManager
-@inject IInterestManager InterestManager
-@inject IThreadsManager ThreadManager
+@*@inject IUserInterestManager UserInterestManager*@
+@*@inject IInterestManager InterestManager*@
+@*@inject IThreadsManager ThreadManager*@
+@inject IUserManager UserManager
 @inject NavigationManager NavigationManager
 
 
 <h3>Form-forum Interest Page:</h3>
-@if(userInterests != null)
+
+@*<h3>User Interest</h3>
+@if(User != null)
 {
     <div>
-        @foreach(var userIn in userInterests)
+        @foreach(var interest in User.Interests)
         {
             <ul>
-                <li>@userIn</li>
-
+                <li>@interest</li>
+                <button @onclick="RemoveInterest">Remove</button>
             </ul>
         }
     </div>
-    <div>
-
-    </div>
 }
 
-@code {
+<h3>All Interests</h3>
+    <div>
+        @foreach(var interest in interests)
+        {
+            <ul>
+                <li>@interest</li>
+              
+            </ul>
+        }
+    </div>*@
 
-    List<UserInterestModel>userInterests = new ();
-    List<InterestModel>interests = new ();
-    List<ThreadModel> Threads = new();
+
+
+@code {
+    public UserModel User { get; set; } = new();
+    
+    List<InterestModel> interests = new ();
+    List<ThreadModel> threads = new();
 
 
     protected override async Task OnInitializedAsync()
     {
+        //interests = await InterestManager.GetAllInterest();
 
-        
-        interests = await InterestManager.GetAllInterest();
-        
-        userInterests = await UserInterestManager.GetUserInterest();
-        
-        
-        Threads = await ThreadManager.GetAllThreads();
+       User = await UserManager.GetCurrentUser();
 
+
+        //threads = await ThreadManager.GetAllThreads();
     }
     
     void HandleDeleteInterest(int InterestId)
@@ -48,7 +58,7 @@
         
     }
     
-    void HandleUpdateInterest()
+    public async Task RemoveInterest()
     {
         
     }

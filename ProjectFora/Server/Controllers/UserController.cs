@@ -19,22 +19,23 @@ namespace ProjectFora.Server.Controllers
 
         // GET: 
         [HttpGet("CurrentUser")]
-        public async Task<UserModel> GetCurrentUser(UserModel userModel)
+        public async Task<ActionResult<UserModel>> GetCurrentUser(string email)
         {
+            //var currentUser = _context.Users.FirstOrDefault(x => x.Username == email);
             // Skickar tillbaka nuvarande användare
-            if(userModel != null)
+            if(email != null)
             {
                 var user = _context.Users
                     .Include(u => u.UserInterests)
                     .Include(ui=> ui.Interests)
-                    .Where(x => x.Username == userModel.Username).FirstOrDefault();
+                    .Where(x => x.Username == email).FirstOrDefault();
 
                 if(user != null)
                 {
-                    return user;
+                    return Ok(user);
                 }
             }
-            return null; ;
+            return BadRequest("Fel här");
         }
 
         // GET :
@@ -57,6 +58,17 @@ namespace ProjectFora.Server.Controllers
             // Lägger till användare i AppDbContext
             _context.Users.Add(user);
             _context.SaveChanges();
+        }
+
+        // GET: get users all interest
+        [HttpGet("GetInterests")]
+
+        public async Task<List<UserInterestModel>> GetUserInterest()
+        {
+            var result = _context.UserInterests.Where(x => x.User.Username == "alma@gmail.com").ToList();
+
+            return result;
+
         }
 
         // PUT 

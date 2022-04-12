@@ -43,9 +43,16 @@ namespace ProjectFora.Server.Controllers
         }
 
         // POST a thead:
-        [HttpPost("PostThead")]
-        public async Task PostThread( ThreadModel postThread)
+        [HttpPost("PostThread")]
+        public async Task PostThread(ThreadModel postThread)
         {
+
+            var interest = _context.Interests.FirstOrDefault(i => i.Id == 11);
+            var user = _context.Users.FirstOrDefault(u => u.Id == 1);
+
+            postThread.Interest = interest;
+            postThread.User = user;
+
             _context.Threads.Add(postThread);
             _context.SaveChanges();
         }

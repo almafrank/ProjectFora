@@ -19,23 +19,40 @@
                 <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
                 <ValidationMessage For="@(() => loginModel.Password)" />
             </div>
-              <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-primary">Login</button>
             <NavLink href="register" class="btn btn-link">Register</NavLink>
         </EditForm>
     </div>
 </div>
 
+@if (currentUser != null && currentUser.Deleted == true)
+{
+    <h3>Do you want to activate your account?</h3>
+    <button @onclick=ActivateUser>Yes</button>
+    <button @onclick=HandleNo>No</button>
+}
+
 @code {
     private LoginModel loginModel = new LoginModel();
+    private UserModel currentUser = new();
+    private string Message { get; set; }
 
     private async void HandleLogin()
     {
         await UserManager.Login(loginModel);
-        var userEmail = await LocalStorage.GetItemAsStringAsync("Username");
-        userEmail = userEmail.Replace("\"", "");
-       
-        //StateHasChanged();
-        NavigationManager.NavigateTo("/");
     }
+
+    async Task ActivateUser()
+    {
+        currentUser = await UserManager.GetCurrentUser();
+        Message = await UserManager.ActivateUser(currentUser);
+    }    
+
+    async void HandleNo()
+    {
+        await UserManager.Logout();
+    }  
+    
+
 
 }

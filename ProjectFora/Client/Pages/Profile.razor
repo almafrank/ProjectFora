@@ -8,6 +8,7 @@
 @if (userStatus != null && userStatus.IsLoggedIn)
 {
     <h1>You only see this because you are logged in</h1>
+   
 
     @if (userStatus.IsAdmin)
     {
@@ -17,9 +18,12 @@
 else
 {
     <h1>Unauthorized</h1>
+      @*<button @onclick=DeActivateUser>No</button>*@
 }
 
 @code {
+    public List<UserInterestModel> UserInterests { get; set; } = new();
+
     // Auth pipeline:
     // 1. Hämta token från Local Storage
     // 2. Skicka den token:en till API:t
@@ -32,6 +36,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        var currentUser = UserManager.GetCurrentUser();
+
+        UserInterests = await UserManager.GetUserInterests();
 
         // 1. Hämta token från Local Storage
         var token = await UserManager.GetToken();
@@ -40,10 +47,11 @@ else
 
         userStatus = await UserManager.CheckUserLogin(token);
 
-        userEmail = await LocalStorage.GetItemAsStringAsync("Username");
-        userEmail = userEmail.Replace("\"", "");
-        User = await UserManager.GetCurrentUser(userEmail);
+        User = await UserManager.GetCurrentUser();
 
     }
-
+    //    async Task DeActivateUser()
+    //{
+    //   Message = await UserManager.DeActivateUser(currentUser);
+    //}
 }

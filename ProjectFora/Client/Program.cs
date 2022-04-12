@@ -16,6 +16,7 @@ builder.Services.AddScoped<IInterestManager, InterestManager>();
 builder.Services.AddScoped<IProfileManager, ProfileManager>();
 builder.Services.AddScoped<IUserManager, UserManager>();
 builder.Services.AddScoped<IMessageManager, MessageManager>();
+builder.Services.AddScoped<IUserInterestManager, UserInterestManager>();
 
 builder.Services.AddOptions();
 builder.Services.AddBlazoredLocalStorage();

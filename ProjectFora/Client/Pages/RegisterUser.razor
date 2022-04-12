@@ -2,6 +2,7 @@
 @inject NavigationManager NavigationManager
 @inject IInterestManager Intererestmanager
 @inject IUserManager UserManager
+@inject IUserInterestManager UserInterestManager
 
 <h3>Register</h3>
 
@@ -61,13 +62,22 @@
         AddUser.Username = registerUser.Email;
         await Intererestmanager.SetUser(AddUser);
 
-        var currentUser = await Intererestmanager.CurrentUser(registerUser.Email);
+        foreach(var interest in Interests)
+        {
+            UserInterests.Add(interest);
+        }
+
+        var currentUser = await UserManager.GetCurrentUser();
+
+        foreach(var interest in UserInterests)
+        {
+            var userInterest = new UserInterestModel { User = currentUser, Interest = interest};
+          
+            await UserInterestManager.AddUserInterest(userInterest);
+        }
+      
         
 
-        //await UserManager.UpdateUserInterests(UserInterests, AddUser);
-
-        //Int id
-        //name
     }
 
 

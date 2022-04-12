@@ -11,7 +11,6 @@
 
     private async void Logout()
     {
-        var userEmail = await LocalStorage.GetItemAsStringAsync("Username");
         await UserManager.Logout();
         NavigationManager.NavigateTo("/login");
     }

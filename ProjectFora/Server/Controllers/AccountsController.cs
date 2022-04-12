@@ -47,7 +47,9 @@ namespace ProjectFora.Server.Controllers
         {
             var userDb = await _signInManager.UserManager.FindByEmailAsync(user.Email);
 
-            if(userDb != null)
+         
+
+            if (userDb != null)
             {
                 var signInResult = await _signInManager.CheckPasswordSignInAsync(userDb, user.Password, false);
                
@@ -130,6 +132,49 @@ namespace ProjectFora.Server.Controllers
             }
             return null; ;
         }
+
+        //Återväcker en flaggad användare
+        [HttpPut]
+        [Route("activateUser")]
+        public async Task<ActionResult> ActivateUser(UserModel user)
+        {
+            //hämtar vi användaren från databasen genom att vi stämmer av mail.
+
+            var userToEdit = _appDbContext.Users.FirstOrDefault(x => x.Username == user.Username);
+
+            if (userToEdit != null)
+            {
+                userToEdit.Deleted = false;
+                _appDbContext.Update(userToEdit);
+                _appDbContext.SaveChanges();
+                return Ok();
+            }
+
+            return BadRequest("User not found");
+
+        }
+
+        //Flaggar användaren som borttagen
+        [HttpPut]
+        [Route("deactivateUser")]
+        public async Task<ActionResult> DeActivateUser(UserModel user)
+        {
+            //hämtar vi användaren från databasen genom att vi stämmer av mail.
+
+            var userToEdit = _appDbContext.Users.FirstOrDefault(x => x.Username == user.Username);
+
+            if (userToEdit != null)
+            {
+                userToEdit.Deleted = true;
+                _appDbContext.Update(userToEdit);
+                _appDbContext.SaveChanges();
+                return Ok();
+            }
+
+            return BadRequest("User not found");
+
+        }
+
 
         //Fungerar
         public string GenerateToken()

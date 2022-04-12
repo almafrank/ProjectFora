@@ -24,16 +24,6 @@ namespace ProjectFora.Server.Controllers
 
 
 
-        // GET: get users all interest
-        [HttpGet("GetAllUserInterest")]
-
-        public async Task<List<UserInterestModel>> GetUserInterest()
-        {
-
-            return _context.UserInterests.ToList();
-
-        }
-
         // GET a singel interest
         [HttpGet("GetSingelInterest:{id}")]
         public async Task<UserInterestModel> GetSingelInterest( int InterestId)
@@ -71,10 +61,40 @@ namespace ProjectFora.Server.Controllers
                 _context.Update(updateUserInterest);
                 _context.SaveChanges();
             }
-
-
-            
         }
+
+        [HttpPost("postUserInterest")]
+
+        public async Task<ActionResult> AddUserInterest(UserInterestModel user)
+        {
+
+            if (user != null)
+            {
+                _context.UserInterests.Add(user);
+                _context.SaveChanges();
+
+                return Ok();
+            }
+            return BadRequest("Någonting gick snett");
+        }
+
+        //[HttpDelete("removeUserInterest")]
+
+        //public async Task<ActionResult> RemoveUserInterest(UserModel user, InterestModel interest)
+        //{
+       
+
+     
+
+        //    if (user != null && interest != null)
+        //    {
+        //        _context.UserInterests.Remove(new UserInterestModel { User = user, Interest = interest });
+        //        _context.SaveChanges();
+
+        //        return Ok();
+        //    }
+        //    return BadRequest("Någonting gick snett");
+        //}
 
 
 

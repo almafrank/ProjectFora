@@ -16,22 +16,23 @@ namespace ProjectFora.Server.Controllers
         {
             _context = appDbContext;
         }
-
-        // GET: 
-        [HttpGet("currentuser")]
-        public async Task<ActionResult<UserModel>> CurrentUser([FromQuery]string email)
+        // Post new interest
+        [HttpPost("PostInterest")]
+        public async Task<ActionResult> PostInterest(InterestModel interest)
         {
-            // La till Include()  Interest
-            var result = _context.Users.Include(x => x.Interests).ToList().FirstOrDefault(x => x.Username == email);
+            var user = _context.Users.FirstOrDefault(u => u.Id == 1);
 
-            if (result != null)
+            interest.User = user;
+
+            if(interest != null)
             {
-                return Ok(result);
+                _context.Interests.Add(interest);
+                _context.SaveChanges();
+                return Ok();
             }
-
-            return BadRequest("User not found");
+            return BadRequest();        
         }
-
+        //Fungerar!
         // GET: 
         [HttpGet("GetAllInterest")]
         public async Task<List<InterestModel>> GetAllInterest()
