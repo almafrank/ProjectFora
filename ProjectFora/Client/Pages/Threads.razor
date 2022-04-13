@@ -1,87 +1,42 @@
-﻿@page "/threads"
+﻿@page "/threads/{id:int}"
 @using ProjectFora.Shared;
 @inject IThreadsManager ThreadManager
 @inject IMessageManager MessageManager
 @inject IInterestManager InterestManager
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
-<div>
-    @*Matar ut med foreach med foreach alla user interest*@
-    <h3>User Interest:</h3>
-    @if (User != null) {
-        <div>
-            @foreach (var interest in User.Interests)
-            {
-                @interest.Name
-            }
-        </div>
-    }
-</div>
-<div>
-   @* Matar ut alla interest threads *@
-    <h3>Interest Threads:</h3>
-    @if (Interest != null)
-    {
-        <div>
-            @foreach (var  thread in Interest.Threads)
-            {  
-                @thread.Name
-           <button @onclick="@(()=>NavigateToThread(@thread.Id))">Get A Thread</button>
-           <button @onclick="@(()=>DeleteAThread(@thread.Id))">Delete A Thread</button>
-           <button @onclick="@(()=>UpdateAThread(@thread.Id))">Update A Thread</button>
+
+@* Matar ut alla interest threads *@
+@if (Interest != null)
+
+{
+    <h1>@Interest.Name</h1>
+    <hr />
+    <h3>Threads:</h3>
+    <div>
+        @foreach (var  thread in Interest.Threads)
+        {  
+            @thread.Name
+        <button @onclick="@(()=>NavigateToThread(@thread.Id))">Get A Thread</button>
+        <button @onclick="@(()=>DeleteAThread(@thread.Id))">Delete A Thread</button>
+        <button @onclick="@(()=>UpdateAThread(@thread.Id))">Update A Thread</button>
               
-            }
-        </div>
-    }
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        }
+    </div>
+}
 
 @code {
     [Parameter]
     public int Id { get; set; }
-    public string Name { get; set; }
-
-
-
-
-
 
     public InterestModel Interest = new();//new intrest
-    public UserModel User { get; set; } = new();//new user
-    public ThreadModel Thread { get; set; } = new(); //new thread
 
-
-    List<ThreadModel> GetThreads = new();//Alla trådar
-                                         //List<InterestModel> interestList = new();//interest lista
-
-
-
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-
-        //hämtar alla interest från interestManager
-        GetThreads = await ThreadManager.GetAllThreads();
-        //hämtar alla interest från interestManager
-        //interestList = await InterestManager.GetAllInterest();
-
-
+        // Get interest with its threads
+        Interest = await InterestManager.GetInterest(Id);
     }
+
     //1.metod att hämta tråd när söker på-klicka och gå in på en tråd...
     public async Task NavigateToThread(int Id)
     {

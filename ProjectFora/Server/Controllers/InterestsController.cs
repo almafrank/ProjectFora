@@ -32,7 +32,16 @@ namespace ProjectFora.Server.Controllers
         [HttpGet("{id}")]
         public InterestModel Get([FromRoute] int id)
         {
-            return _context.Interests.FirstOrDefault(x => x.Id == id);
+            return _context.Interests.Include(i => i.Threads).Select(i => new InterestModel()
+            {
+                Id = i.Id,
+                Name = i.Name,
+                Threads = i.Threads.Select(t => new ThreadModel()
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                }).ToList()
+            }).FirstOrDefault(x => x.Id == id);
         }
 
         // POST : New interest

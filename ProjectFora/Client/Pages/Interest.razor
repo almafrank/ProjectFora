@@ -5,56 +5,34 @@
 @*@inject IThreadsManager ThreadManager*@
 @inject IUserManager UserManager
 @inject NavigationManager NavigationManager
+@inject IUserInterestManager userInterestManager
 
+<h3>Your interests:</h3>
 
-<h3>Form-forum Interest Page:</h3>
-
-@*<h3>User Interest</h3>
-@if(User != null)
-{
-    <div>
-        @foreach(var interest in User.Interests)
-        {
-            <ul>
-                <li>@interest</li>
-                <button @onclick="RemoveInterest">Remove</button>
-            </ul>
-        }
-    </div>
+@if(userInterests != null) {
+    @foreach(var interest in userInterests)
+    {
+        <h2 onclick="@(() => NavigateToThreads(@interest.Id))">@interest.Name</h2>
+    }
 }
 
-<h3>All Interests</h3>
-    <div>
-        @foreach(var interest in interests)
-        {
-            <ul>
-                <li>@interest</li>
-              
-            </ul>
-        }
-    </div>*@
-
-
-
 @code {
-    public UserModel User { get; set; } = new();
-    
-    List<InterestModel> interests = new ();
-    List<ThreadModel> threads = new();
-
+    public List<InterestModel>? userInterests;
 
     protected override async Task OnInitializedAsync()
     {
-        //interests = await InterestManager.GetAllInterest();
+        // Get token
+        var token = await UserManager.GetToken();
 
-      
-
-     
-
-
-        //threads = await ThreadManager.GetAllThreads();
+        // Get user interests
+        userInterests = await userInterestManager.GetUserInterests(token);
     }
-    
+
+    public void NavigateToThreads(int id)
+    {
+        NavigationManager.NavigateTo($"threads/{id}");
+    }
+
     public async Task DeleteInterest(int InterestId)
     {
         
