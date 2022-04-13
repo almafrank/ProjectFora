@@ -1,6 +1,7 @@
-﻿@page "/thread"
+﻿@page "/thread/{Id:int}"
 @inject IUserManager UserManager
 @inject IMessageManager MessageManager
+@inject ILocalStorageService LocalStorage
 
 <h3>Create a new message</h3>
 
@@ -14,14 +15,29 @@
 </EditForm>
 
 
-    @code {
-        private MessageModel newMessage = new();
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private MessageModel newMessage = new();
 
 
-        void CreateNewMessage()
+    void CreateNewMessage()
+    {
+        MessageManager.PostMessage(newMessage);
+    }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Get token
+        string token = await LocalStorage.GetItemAsStringAsync("token");
+
+        if(!String.IsNullOrEmpty(token))
         {
-            MessageManager.PostMessage(newMessage);
+            // Get the thread with all messages
+            var threadMessages = MessageManager.GetThreadMessages(Id, token);
         }
-
+    }
 
 }

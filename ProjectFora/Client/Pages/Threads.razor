@@ -2,10 +2,44 @@
 @using ProjectFora.Shared;
 @inject IThreadsManager ThreadManager
 @inject IMessageManager MessageManager
+@inject IInterestManager InterestManager
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
+<div>
+    @*Matar ut med foreach med foreach alla user interest*@
+    <h3>User Interest:</h3>
+    @if (User != null) {
+        <div>
+            @foreach (var interest in User.Interests)
+            {
+                @interest.Name
+            }
+        </div>
+    }
+</div>
+<div>
+   @* Matar ut alla interest threads *@
+    <h3>Interest Threads:</h3>
+    @if (Interest != null)
+    {
+        <div>
+            @foreach (var  thread in Interest.Threads)
+            {  
+                @thread.Name
+           <button @onclick="@(()=>NavigateToThread(@thread.Id))">Get A Thread</button>
+           <button @onclick="@(()=>DeleteAThread(@thread.Id))">Delete A Thread</button>
+           <button @onclick="@(()=>UpdateAThread(@thread.Id))">Update A Thread</button>
+              
+            }
+        </div>
+    }
+</div>
 
-<h3>Threads</h3>
+
+
+
+
+
 
 
 
@@ -19,24 +53,23 @@
 
 
 @code {
-    //[Parameter]
-    //MessageModel:
+    [Parameter]
     public int Id { get; set; }
-    public string Message { get; set; } = String.Empty;
-    //AccountUserModel
-    public string Username { get; set; } = String.Empty;
-    public bool Banned { get; set; }
-    public bool Deleted { get; set; }
+    public string Name { get; set; }
 
 
 
 
 
 
+    public InterestModel Interest = new();//new intrest
+    public UserModel User { get; set; } = new();//new user
+    public ThreadModel Thread { get; set; } = new(); //new thread
 
-    List<ThreadModel> GetThreads = new();
-    List<MessageModel> Messages = new();
-    List<UserModel> bannedUsers = new();
+
+    List<ThreadModel> GetThreads = new();//Alla trådar
+                                         //List<InterestModel> interestList = new();//interest lista
+
 
 
     protected override async Task OnInitializedAsync()
@@ -45,35 +78,28 @@
         //hämtar alla interest från interestManager
         GetThreads = await ThreadManager.GetAllThreads();
         //hämtar alla interest från interestManager
-        Messages = await MessageManager.GetAllMessages();
-        //Users
-        //bannedUsers = await 
+        //interestList = await InterestManager.GetAllInterest();
+
 
     }
     //1.metod att hämta tråd när söker på-klicka och gå in på en tråd...
-    void GetAThread(int Id)
+    public async Task NavigateToThread(int Id)
     {
-        NavigationManager.NavigateTo($"threads/GetAThread/{Id}");
+        NavigationManager.NavigateTo($"thread/{Id}");
     }
-    //2.metod att ta bort en tråd när man klickar
-    void DeleteAThread(int Id)
-    {
-        NavigationManager.NavigateTo($"threads/DeleteThread/{Id}");
-    }
-    //3.metod som updaterar/edit en tråd när man klickar
-    void UpdateAThread(int Id)
-    {
-        NavigationManager.NavigateTo($"threads/updatethread{Id}");
-    }
-    void UpdateThreadAdmin()
-    {
 
-    }
-    void DeleteThreadAdmin()
+    //2.metod att ta bort en tråd när man klickar
+    public async Task DeleteAThread(int Id)
     {
         
     }
 
+    //3.metod som updaterar/edit en tråd när man klickar
+    public async Task UpdateAThread(int Id)
+    {
+       
+    }
+   
 
 
 

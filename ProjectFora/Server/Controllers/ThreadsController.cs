@@ -36,7 +36,7 @@ namespace ProjectFora.Server.Controllers
 
         // GET : Specific thread:
         [HttpGet("{id}")]
-        public ThreadModel Get([FromRoute] int id, [FromQuery] string token)
+        public ThreadModel GetAThread([FromRoute] int id, [FromQuery] string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
