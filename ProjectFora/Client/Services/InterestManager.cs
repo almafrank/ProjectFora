@@ -6,7 +6,7 @@ namespace ProjectFora.Client.Services
     public interface IInterestManager
     {
         Task<List<InterestModel>> GetAllInterest();
-        Task<InterestModel> GetAInterest(int id);
+        Task<InterestModel> GetInterest(int id);
         Task PostAInterest(InterestModel postInterest);
         Task<List<InterestModel>> UpdateInterest(int id, InterestModel interest);
         Task<InterestModel> DeleteInterest(int id);
@@ -30,14 +30,19 @@ namespace ProjectFora.Client.Services
             return await _httpClient.GetFromJsonAsync<InterestModel>($"interest/deleteInterest/{id}");
         }
 
-        public async Task<InterestModel> GetAInterest(int id)
+        public async Task<InterestModel> GetInterest(int id)
         {
-            return await _httpClient.GetFromJsonAsync<InterestModel>($"interest/GetAInterest/{id}");
+           var interest = await _httpClient.GetFromJsonAsync<InterestModel>($"api/interests/{id}");
+            if(interest != null)
+            {
+                return interest;
+            }
+            return null;
         }
 
         public async Task<List<InterestModel>> GetAllInterest()
         {
-            var result = await _httpClient.GetFromJsonAsync<List<InterestModel>>("interest/getallInterest");
+            var result = await _httpClient.GetFromJsonAsync<List<InterestModel>>("api/interests");
             if(result != null)
             {
                 return result;

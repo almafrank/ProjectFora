@@ -1,6 +1,8 @@
 ﻿@inject ILocalStorageService LocalStorage
 @inject IInterestManager InterestManager
 @inject IUserManager UserManager
+@inject IUserInterestManager UserInterestManager
+
 @page "/profile"
 
 <h3>Profile</h3>
@@ -8,7 +10,10 @@
 @if (userStatus != null && userStatus.IsLoggedIn)
 {
     <h1>You only see this because you are logged in</h1>
-   
+    @foreach(var interest in UserInterests)
+    {
+        <h2>@interest.Name</h2>
+    }
 
     @if (userStatus.IsAdmin)
     {
@@ -22,7 +27,7 @@ else
 }
 
 @code {
-    public List<UserInterestModel> UserInterests { get; set; } = new();
+    public List<InterestModel> UserInterests { get; set; } = new();
 
     // Auth pipeline:
     // 1. Hämta token från Local Storage
@@ -36,18 +41,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var currentUser = UserManager.GetCurrentUser();
-
-        UserInterests = await UserManager.GetUserInterests();
-
         // 1. Hämta token från Local Storage
         var token = await UserManager.GetToken();
 
         // 2. Skicka den token:en till API:t
 
         userStatus = await UserManager.CheckUserLogin(token);
-
-        User = await UserManager.GetCurrentUser();
+        UserInterests = await UserInterestManager.GetUserInterests(token);
+        int x = 1;
 
     }
     //    async Task DeActivateUser()
