@@ -8,7 +8,7 @@ using ProjectFora.Server.Models;
 
 namespace ProjectFora.Server.Controllers
 {
-    [Route("Interest")]
+    [Route("api/[controller]")]
     [ApiController]
     public class InterestsController : ControllerBase
     {

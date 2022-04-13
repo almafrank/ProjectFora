@@ -4,8 +4,8 @@ namespace ProjectFora.Client.Services
 {
     public interface IUserInterestManager
     {
-        Task AddUserInterest(UserInterestModel user);
-        //Task<List<UserInterestModel>> GetUserInterest();
+        Task AddUserInterest(InterestModel interest, string token);
+        Task<List<InterestModel>> GetUserInterests(string token);
         //Task DeleteUserInterest(int InterestId);
         //Task UpdateUserInterest(int InterestId);
         //Task<UserInterestModel> GetSingelInterest(int InterestId);
@@ -20,30 +20,35 @@ namespace ProjectFora.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task AddUserInterest(UserInterestModel user)
+        public async Task<List<InterestModel>> GetUserInterests(string token)
         {
-            if(user != null)
+            var result = await _httpClient.GetFromJsonAsync<List<InterestModel>>($"api/userinterest?accessToken={token}");
+            if (result != null)
             {
-                await _httpClient.PostAsJsonAsync("UserInterest/postUserInterest", user);
+                return result;
+                int x = 1;
             }
-           
+            return null;
+        }
+        public async Task AddUserInterest(InterestModel interest, string token)
+        {
+
+            if (interest != null)
+            {
+                await _httpClient.PostAsJsonAsync($"api/userinterest?accessToken={token}", interest);
+            }
         }
 
-
-        //public async Task DeleteUserInterest(int InterestId)
-        //{
-        //    await _httpClient.GetFromJsonAsync<UserInterestModel>($"UserInterest/DeleteUserInterest/{InterestId}");
-        //}
+        public async Task DeleteUserInterest(int Id, string token)
+        {
+            await _httpClient.GetFromJsonAsync<UserInterestModel>($"api/UserInterest/DeleteUserInterest?accessToken={token}/{Id}");
+        }
 
         //public async Task<UserInterestModel> GetSingelInterest(int InterestId)
         //{
         //    return await _httpClient.GetFromJsonAsync<UserInterestModel>($"UserInterest/GetUserSingelInterest/{InterestId}");
         //}
 
-        public async Task<List<UserInterestModel>> GetUserInterest()
-        {
-            return await _httpClient.GetFromJsonAsync<List<UserInterestModel>>("UserInterest/GetAllUserInterest");
-        }
 
 
 

@@ -1,7 +1,9 @@
 ﻿
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectFora.Server.Data;
+using ProjectFora.Server.Models;
 using ProjectFora.Shared;
 
 
@@ -10,19 +12,19 @@ using ProjectFora.Shared;
 
 namespace ProjectFora.Server.Controllers
 {
-    [Route("UserInterest")]
+    [Route("api/[controller]")]
     [ApiController]
     public class UserInterestController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public UserInterestController(AppDbContext appDbContext)
+        public UserInterestController(AppDbContext appDbContext, SignInManager<ApplicationUser> signInManager)
 
         {
             _context = appDbContext;
+            _signInManager = signInManager;
         }
-
-
 
         // GET a singel interest
         [HttpGet("GetSingelInterest:{id}")]
@@ -32,14 +34,48 @@ namespace ProjectFora.Server.Controllers
             var interest = _context.UserInterests.Where(u => u.InterestId == InterestId);
             return interest.FirstOrDefault(); ;   
         }
+
+        // GET : All userinterests
+        [HttpGet]
+        public List<InterestModel> Get([FromQuery] string accessToken)
+        {
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
+
+            if(user != null)
+            {
+                var currentUser = _context.Users.FirstOrDefault(u => u.Username == user.UserName);
+                var userInterests = _context.Interests.Where(i => i.UserInterests.Any(ui => ui.UserId == currentUser.Id)).ToList();
+
+                if (userInterests != null)
+                {
+                    return userInterests;
+                }
+            }
+            return null;
+        }
         
 
-        // POST ,user post a new interest:
-        [HttpPost("UserPostnewInterest")]
-        public async Task PostUserInterest(UserInterestModel postinterest)
+        // POST : New interest to User
+        [HttpPost]
+        public async Task Post([FromBody] InterestModel interest, [FromQuery] string accessToken)
         {
-            _context.UserInterests.Add(postinterest);
-            _context.SaveChanges();
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
+
+            if(user != null)
+            {
+                var currentUser = _context.Users.FirstOrDefault(u => u.Username == user.UserName);
+                var uinterest = _context.Interests.FirstOrDefault(i => i.Id == interest.Id);
+
+                if(currentUser != null)
+                {
+                    UserInterestModel userInterest = new();
+                    userInterest.Interest = uinterest;
+                    userInterest.User = currentUser;
+
+                    _context.UserInterests.Add(userInterest);
+                    await _context.SaveChangesAsync();
+                }
+            }
         }
 
         [HttpDelete("DeleteUserInterest:{id}")]
@@ -63,20 +99,6 @@ namespace ProjectFora.Server.Controllers
             }
         }
 
-        [HttpPost("postUserInterest")]
-
-        public async Task<ActionResult> AddUserInterest(UserInterestModel user)
-        {
-
-            if (user != null)
-            {
-                _context.UserInterests.Add(user);
-                _context.SaveChanges();
-
-                return Ok();
-            }
-            return BadRequest("Någonting gick snett");
-        }
 
         //[HttpDelete("removeUserInterest")]
 
