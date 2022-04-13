@@ -1,6 +1,7 @@
 ﻿@page "/threads/{id:int}"
 @using ProjectFora.Shared;
 @inject IThreadsManager ThreadManager
+@inject IUserManager UserManager
 @inject IMessageManager MessageManager
 @inject IInterestManager InterestManager
 @inject ILocalStorageService LocalStorage
@@ -33,8 +34,9 @@
 
     protected override async Task OnParametersSetAsync()
     {
+         var token = await UserManager.GetToken();
         // Get interest with its threads
-        Interest = await InterestManager.GetInterest(Id);
+        Interest = await InterestManager.GetInterest(Id, token);
     }
 
     //1.metod att hämta tråd när söker på-klicka och gå in på en tråd...

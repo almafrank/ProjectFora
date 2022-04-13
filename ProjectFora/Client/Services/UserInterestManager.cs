@@ -6,9 +6,8 @@ namespace ProjectFora.Client.Services
     {
         Task AddUserInterest(InterestModel interest, string token);
         Task<List<InterestModel>> GetUserInterests(string token);
-        //Task DeleteUserInterest(int InterestId);
-        //Task UpdateUserInterest(int InterestId);
-        //Task<UserInterestModel> GetSingelInterest(int InterestId);
+        Task<string> DeleteUserInterest(int Id, string token);
+        Task<string> EditInterest(int Id, string token);
 
     }
     public class UserInterestManager : IUserInterestManager
@@ -26,7 +25,7 @@ namespace ProjectFora.Client.Services
             if (result != null)
             {
                 return result;
-                int x = 1;
+           
             }
             return null;
         }
@@ -39,31 +38,17 @@ namespace ProjectFora.Client.Services
             }
         }
 
-        public async Task DeleteUserInterest(int Id, string token)
+        public async Task<string> DeleteUserInterest(int Id, string token)
         {
-            await _httpClient.GetFromJsonAsync<UserInterestModel>($"api/UserInterest/DeleteUserInterest?accessToken={token}/{Id}");
+            var result = await _httpClient.DeleteAsync($"api/UserInterest/{Id}?accessToken={token}");
+            return result.ToString();
         }
 
-        //public async Task<UserInterestModel> GetSingelInterest(int InterestId)
-        //{
-        //    return await _httpClient.GetFromJsonAsync<UserInterestModel>($"UserInterest/GetUserSingelInterest/{InterestId}");
-        //}
-
-
-
-
-        //public Task UpdateUserInterest(int InterestId)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public async Task UpdateUserInterest(int InterestId)
-        //{
-        //    var result = await _httpClient.PutAsync($"UserInterest/UpdateUserInterest{InterestId}");
-        //    var updateUserInterest = await result.Content.ReadFromJsonAsync();
-        //    return updateUserInterest;
-        //}
-
+        public async Task<string> EditInterest(int Id, string token)
+        {
+            var result = await _httpClient.GetFromJsonAsync<UserInterestModel>($"api/UserInterest/editinterest?accessToken={token}/{Id}");
+            return result.ToString();
+        }
 
     }
 }
