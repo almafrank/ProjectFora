@@ -1,85 +1,81 @@
 ﻿@page "/registerUser"
 @inject NavigationManager NavigationManager
-@inject IInterestManager Intererestmanager
+@inject IInterestManager Interestmanager
 @inject IUserManager UserManager
 @inject IUserInterestManager UserInterestManager
+@inject ILocalStorageService LocalStorage
 
-<h3>Register</h3>
+@if (!registered)
+{
+    <h3>Register</h3>
 
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-title">Please enter your details</h5>
-        <EditForm Model="registerUser" OnValidSubmit="HandleRegistration">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Please enter your details</h5>
+            <EditForm Model="registerUser" OnValidSubmit="HandleRegistration">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-            <div class="form-group">
-                <label for="email">Email address</label>
-                <InputText Id="email" class="form-control" @bind-Value="registerUser.Email" />
-                <ValidationMessage For="@(() => registerUser.Email)" />
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <InputText Id="password" type="password" class="form-control" @bind-Value="registerUser.Password" />
-                <ValidationMessage For="@(() => registerUser.Password)" />
-            </div>
-            <div class="form-group">
-                <label for="password">Confirm Password</label>
-                <InputText Id="confirmPassword" type="password" class="form-control" @bind-Value="registerUser.ConfirmPassword" />
-                <ValidationMessage For="@(() => registerUser.ConfirmPassword)" />
-            </div>
-            <div>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </EditForm>
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <InputText Id="email" class="form-control" @bind-Value="registerUser.Email" />
+                    <ValidationMessage For="@(() => registerUser.Email)" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <InputText Id="password" type="password" class="form-control" @bind-Value="registerUser.Password" />
+                    <ValidationMessage For="@(() => registerUser.Password)" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Confirm Password</label>
+                    <InputText Id="confirmPassword" type="password" class="form-control" @bind-Value="registerUser.ConfirmPassword" />
+                    <ValidationMessage For="@(() => registerUser.ConfirmPassword)" />
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </EditForm>
+        </div>
     </div>
-
-    <h1>Interests</h1>
-    @foreach (var interest in Interests)
+}
+else
+{
+    @if (Interests != null)
     {
-        <input type="checkbox" /> @interest.Name
+        @foreach (var interest in Interests)
+        {
+            <div>
+               <h3>@interest.Name</h3><button class="btn btn-outline-dark" @onclick="@(() => AddToUserList(interest.Id))">Add</button>
+            </div>
+        }
     }
-
-</div>
+}
 
 @code {
-    public UserModel AddUser { get; set; } = new();
     public List<InterestModel> Interests { get; set; } = new();
-    public List<InterestModel> UserInterests { get; set; } = new();
     private RegisterModel registerUser = new RegisterModel();
+    private bool registered = false;
 
     protected override async Task OnInitializedAsync()
     {
-        Interests = await Intererestmanager.GetAllInterest();
+        Interests = await Interestmanager.GetAllInterest();
     }
 
     public async Task HandleRegistration()
     {
-        // Skapar en användare till IdentityFlora databasen
+        // Skapar en användare till båda IdentityFlora och ForaForum
         await UserManager.RegisterUser(registerUser);
 
-        // Skapar en användare i FloraForum databasen.
-        AddUser.Username = registerUser.Email;
-        await Intererestmanager.SetUser(AddUser);
-
-        foreach(var interest in Interests)
-        {
-            UserInterests.Add(interest);
-        }
-
-        var currentUser = await UserManager.GetCurrentUser();
-
-        foreach(var interest in UserInterests)
-        {
-            var userInterest = new UserInterestModel { User = currentUser, Interest = interest};
-          
-            await UserInterestManager.AddUserInterest(userInterest);
-        }
-      
-        
-
+        registered = true;
     }
 
+    private async void AddToUserList(int id)
+    {
+        InterestModel interest = new();
+        interest.Id = id;
 
+        var token = await UserManager.GetToken();
+        await UserInterestManager.AddUserInterest(interest, token);
 
+    }
 }

@@ -40,6 +40,7 @@ namespace ProjectFora.Server.Controllers
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
+
             if (user != null)
             {
                 var currentUser = _context.Users
@@ -47,7 +48,7 @@ namespace ProjectFora.Server.Controllers
                      .Include(ui => ui.Interests)
                      .Include(t => t.Threads)
                      .Include(m => m.Messages)
-                     .FirstOrDefault(u => u.Id == id);
+                     .FirstOrDefault(u => u.Username == user.UserName);
 
                 if (currentUser != null)
                 {
@@ -81,10 +82,36 @@ namespace ProjectFora.Server.Controllers
 
         // POST : User
         [HttpPost]
-        public async Task Post([FromBody] UserModel user)
+        public async Task<ActionResult> Post([FromBody] RegisterModel userToRegister)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            if (_signInManager.UserManager.Users.Any(x => x.UserName == userToRegister.Email))
+            {
+                return BadRequest("Username is already taken");
+            }
+
+            ApplicationUser newUser = new() { UserName = userToRegister.Email};
+
+            var result = await _signInManager.UserManager.CreateAsync(newUser, userToRegister.Password);
+
+            if(result.Succeeded)
+            {
+                string token = GenerateToken();
+
+                newUser.Token = token;
+                await _signInManager.UserManager.UpdateAsync(newUser);
+
+                UserModel user = new();
+                user.Username = newUser.UserName;
+                user.Banned = false;
+                user.Deleted = false;
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                return Ok(token);
+            }
+
+            return BadRequest();
         }
 
         // PUT : Edit user
@@ -141,6 +168,11 @@ namespace ProjectFora.Server.Controllers
                 _context.Remove(id);
                 _context.SaveChangesAsync();
             }
+        }
+        public string GenerateToken()
+        {
+            string token = Guid.NewGuid().ToString();
+            return token;
         }
 
     }
