@@ -85,7 +85,7 @@ namespace ProjectFora.Server.Controllers
 
         // POST : Message
         [HttpPost]
-        public async Task Post([FromBody] MessageModel message, [FromQuery] string token)
+        public async Task PostAThreadMessage([FromBody] MessageModel message, [FromQuery] string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 

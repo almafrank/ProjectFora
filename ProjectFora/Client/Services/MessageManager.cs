@@ -5,10 +5,11 @@ namespace ProjectFora.Client.Services
 {
     public interface IMessageManager
     {
-        Task PostMessage(MessageModel postmessage);
-        Task<MessageModel?> DeleteMessage(int id);
-        Task<List<MessageModel>> GetAllMessages();
+        Task PostAThreadMessage(MessageModel message,string token);
+        Task<List<MessageModel>> DeleteMessage(int threadId,string token);
+        Task<List<MessageModel>> GetThreadMessages();
         Task<List<MessageModel>> GetThreadMessages(int threadId, string token);
+        Task<List<MessageModel>> UpdateAThreadMessage(int id, MessageModel updatedMessage, string token);
     }
 
     public class MessageManager : IMessageManager
@@ -20,15 +21,14 @@ namespace ProjectFora.Client.Services
         {
             _httpClient = httpClient;
         }
-
-        // Tar bort ett meddelande
-        public async Task<MessageModel?> DeleteMessage(int id)
+        //
+        public async Task<List<MessageModel>> DeleteMessage(int threadId, string token)
         {
-            return await _httpClient.GetFromJsonAsync<MessageModel>($"message/deletemessage/{id}");
+            return await _httpClient.GetFromJsonAsync<List<MessageModel>>($"message/thread?id={threadId.ToString()}&token={token}");
         }
 
-        //Hämtar alla meddelanden
-        public async Task<List<MessageModel>> GetAllMessages()
+       //Hämtar alla meddelanden
+        public async Task<List<MessageModel>> GetAllThreadMessages()
         {
             return await _httpClient.GetFromJsonAsync<List<MessageModel>>("message/GetMessages");
         }
@@ -38,10 +38,22 @@ namespace ProjectFora.Client.Services
             return await _httpClient.GetFromJsonAsync<List<MessageModel>>($"message/thread?id={threadId.ToString()}&token={token}");
         }
 
+        public Task<List<MessageModel>> GetThreadMessages()
+        {
+            throw new NotImplementedException();
+        }
+
         //Lägger till ett meddelande
-        public async Task PostMessage(MessageModel postmessage)
+        public async Task PostMessage(MessageModel postmessage,string token)
         {
             await _httpClient.PostAsJsonAsync("message/postmessage", postmessage);
+        }
+
+        
+
+        public Task<List<MessageModel>> UpdateAThreadMessage(int id, MessageModel updatedMessage, string token)
+        {
+            throw new NotImplementedException();
         }
     }
 }

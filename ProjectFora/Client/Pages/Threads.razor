@@ -17,10 +17,10 @@
         @foreach (var  thread in Interest.Threads)
         {  
             @thread.Name
-        <button @onclick="@(()=>NavigateToThread(@thread.Id))">Get A Thread</button>
-        <button @onclick="@(()=>DeleteAThread(@thread.Id))">Delete A Thread</button>
-        <button @onclick="@(()=>UpdateAThread(@thread.Id))">Update A Thread</button>
-              
+        <button @onclick="@(()=>NavigateToAThread(@thread.Id))">Get A Thread</button>
+        <button @onclick="@(()=>NavigateToDeleteAThread(@thread.Id))">Delete A Thread</button>
+        <button @onclick="@(()=>NavigateToUpdateAThread(@thread.Id))">Update A Thread</button>
+             
         }
     </div>
 }
@@ -38,21 +38,21 @@
     }
 
     //1.metod att hämta tråd när söker på-klicka och gå in på en tråd...
-    public async Task NavigateToThread(int Id)
+    public async Task NavigateToAThread(int Id)
     {
         NavigationManager.NavigateTo($"thread/{Id}");
     }
 
     //2.metod att ta bort en tråd när man klickar
-    public async Task DeleteAThread(int Id)
+    public async Task NavigateToDeleteAThread(int Id)
     {
-        
+        NavigationManager.NavigateTo($"thread/{Id}");
     }
 
     //3.metod som updaterar/edit en tråd när man klickar
-    public async Task UpdateAThread(int Id)
+    public async Task NavigateToUpdateAThread(int Id)
     {
-       
+        NavigationManager.NavigateTo($"thread/{Id}");
     }
    
 
@@ -64,11 +64,11 @@
 
 
 @*Sida: Trådar 
-En sida där man kan se trådar relaterade ett intresse
+
 Funktionalitet:
 
 Sortera och söka på trådar
-1.Klicka och gå in på en tråd
+
 Se antalet meddelanden i varje tråd
 Trådar skapade av bannade eller borttagna användare ska ha en olika symboler som visar att användaren ärantingen bannad eller borttagen
 

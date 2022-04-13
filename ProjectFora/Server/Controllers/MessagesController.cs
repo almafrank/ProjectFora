@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ProjectFora.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("messages")]
     [ApiController]
     public class MessagesController : ControllerBase
     {
@@ -24,7 +24,8 @@ namespace ProjectFora.Server.Controllers
 
         // GET: All messages
         [HttpGet]
-        public List<MessageModel> Get([FromQuery] string token)
+        [Route("allthreadmessages")]
+        public List<MessageModel> GetAllThreadMessages([FromQuery] string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
@@ -36,29 +37,11 @@ namespace ProjectFora.Server.Controllers
             return null;
         }
 
-        // GET : 
-        [HttpGet("{id}")]
-        public MessageModel Get([FromRoute] int id, [FromQuery] string token)
-        {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
-
-            if (user != null)
-            {
-                var result = _context.Messages.FirstOrDefault(m => m.Id == id);
-
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-
-            return null;
-        }
-
+       
         // GET : messages from specific thread
         [HttpGet]
         [Route("thread")]
-        public List<MessageModel> GetThreadMessages([FromQuery] int id, [FromQuery] string token)
+        public List<MessageModel> GetAThreadMessage([FromQuery] int id, [FromQuery] string token)
         {
 
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
@@ -85,7 +68,8 @@ namespace ProjectFora.Server.Controllers
 
         // POST : message
         [HttpPost]
-        public async Task Post([FromBody] MessageModel message, [FromQuery] string token)
+        [Route("postthreadmessage")]
+        public async Task PostAThreadMessage([FromBody] MessageModel message, [FromQuery] string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
@@ -105,15 +89,17 @@ namespace ProjectFora.Server.Controllers
                         MessageCreated = DateTime.Now
                     };
 
+
                     _context.Messages.Add(message);
-                    await _context.SaveChangesAsync();
+                     await _context.SaveChangesAsync();
                 }
             }
         }
 
         // PUT : update message
-        [HttpPut("{id}")]
-        public async Task Put([FromRoute] int id, [FromBody] MessageModel updatedMessage, [FromQuery] string token)
+        [HttpPut]
+        [Route("putthreadmessage")]
+        public async Task UpdateAThreadMessage([FromRoute] int id, [FromBody] MessageModel updatedMessage, [FromQuery] string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
@@ -134,8 +120,9 @@ namespace ProjectFora.Server.Controllers
         }
 
         // DELETE : specific message
-        [HttpDelete("{id}")]
-        public async Task Delete([FromRoute] int id, [FromQuery] string token)
+        [HttpDelete]
+        [Route("deletethread")]
+        public async Task DeleteAThreadMessage( int id, string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
