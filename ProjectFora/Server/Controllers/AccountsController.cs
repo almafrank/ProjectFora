@@ -45,9 +45,7 @@ namespace ProjectFora.Server.Controllers
         [Route("loginuser")]
         public async Task<ActionResult> Login(LoginModel user)
         {
-            var userDb = await _signInManager.UserManager.FindByEmailAsync(user.Email);
-
-         
+            var userDb = await _signInManager.UserManager.FindByNameAsync(user.Email);
 
             if (userDb != null)
             {

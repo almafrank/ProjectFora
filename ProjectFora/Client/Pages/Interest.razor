@@ -7,14 +7,21 @@
 @inject NavigationManager NavigationManager
 @inject IUserInterestManager userInterestManager
 
-<h3>Your interests:</h3>
-
-@if(userInterests != null) {
-    @foreach(var interest in userInterests)
-    {
-        <h2 onclick="@(() => NavigateToThreads(@interest.Id))">@interest.Name</h2>
-    }
-}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Your interests:</h5>
+ <hr />
+        @if (userInterests != null)
+        {
+            <p class="card-text">
+                @foreach (var interest in userInterests)
+                {
+                    <p onclick="@(() => NavigateToThreads(@interest.Id))">@interest.Name</p>
+                }
+            </p>
+        }
+    </div>
+</div>
 
 @code {
     public List<InterestModel>? userInterests;
@@ -35,20 +42,20 @@
 
     public async Task DeleteInterest(int InterestId)
     {
-        
+
     }
-    
+
     public async Task RemoveInterest()
     {
-        
+
     }
 }
 @*Sida: Intressen
-En sida där man kan se intressen man har på sin användare
-Funktionalitet
-Se intressen man har på sin användare
-Se antalet trådar som finns skapade för intresset
-Klicka och gå in på ett intresse
-Ta bort ett intresse om man skapat det
-Ändra namn på ett intresse om man skapat det och det inte har några tråda//
+    En sida där man kan se intressen man har på sin användare
+    Funktionalitet
+    Se intressen man har på sin användare
+    Se antalet trådar som finns skapade för intresset
+    Klicka och gå in på ett intresse
+    Ta bort ett intresse om man skapat det
+    Ändra namn på ett intresse om man skapat det och det inte har några tråda//
 *@

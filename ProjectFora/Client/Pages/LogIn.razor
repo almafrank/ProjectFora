@@ -5,7 +5,8 @@
 @inject ILocalStorageService LocalStorage
 
 <div class="card">
-    <h4 class="card-header">Login</h4>
+    <h1 class="card-header">Login</h1>
+    <hr />
     <div class="card-body">
         <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
             <DataAnnotationsValidator />
@@ -25,34 +26,15 @@
     </div>
 </div>
 
-@if (currentUser != null && currentUser.Deleted == true)
-{
-    <h3>Do you want to activate your account?</h3>
-    <button @onclick=ActivateUser>Yes</button>
-    <button @onclick=HandleNo>No</button>
-}
-
 @code {
     private LoginModel loginModel = new LoginModel();
-    private UserModel currentUser = new();
-    private string Message { get; set; }
+
 
     private async void HandleLogin()
     {
         await UserManager.Login(loginModel);
+     
     }
 
-    async Task ActivateUser()
-    {
-        //currentUser = await UserManager.GetCurrentUser();
-        //Message = await UserManager.ActivateUser(currentUser);
-    }    
-
-    async void HandleNo()
-    {
-        await UserManager.Logout();
-    }  
-    
-
-
+ 
 }
