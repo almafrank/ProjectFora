@@ -34,21 +34,15 @@ namespace ProjectFora.Server.Controllers
             return null;
         }
 
-        // GET : Specific user
-        [HttpGet("{id}")]
-        public UserModel Get([FromRoute] int id, [FromQuery] string token)
+        // GET : Current user
+        [HttpGet("user")]
+        public UserModel GetUser([FromQuery] string accessToken)
         {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
-
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
-                var currentUser = _context.Users
-                      .Include(u => u.UserInterests)
-                     .Include(ui => ui.Interests)
-                     .Include(t => t.Threads)
-                     .Include(m => m.Messages)
-                     .FirstOrDefault(u => u.Username == user.UserName);
+                var currentUser = _context.Users.FirstOrDefault(u => u.Username == user.UserName);
 
                 if (currentUser != null)
                 {
@@ -127,9 +121,8 @@ namespace ProjectFora.Server.Controllers
             }
         }
         // PUT : De/Activate user
-        [HttpPut]
-        [Route("{id}")]
-        public async Task<ActionResult> Put([FromRoute] int id, [FromBody] UserModel userUpdated, [FromQuery] string token)
+        [HttpGet("updateUser")]
+        public async Task<ActionResult> UpdateUser([FromQuery] string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
@@ -143,7 +136,7 @@ namespace ProjectFora.Server.Controllers
                     {
                         userToEdit.Deleted = true;
                     }
-                    else if (userToEdit.Deleted = true)
+                    else if (userToEdit.Deleted == true)
                     {
                         userToEdit.Deleted = false;
                     }

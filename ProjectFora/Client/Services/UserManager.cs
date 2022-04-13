@@ -12,8 +12,9 @@ namespace ProjectFora.Client.Services
         Task ChangePassword(EditPasswordModel user, string token);
         Task<string> GetToken();
         Task<UserStatusDto> CheckUserLogin(string token);
-        Task<string> ActivateUser(UserModel user);
+        Task<string> ActivateUser(string token);
         Task<string> DeActivateUser(UserModel user);
+        Task<UserModel> GetCurrentUser(string token);
 
 
     }
@@ -58,6 +59,7 @@ namespace ProjectFora.Client.Services
         public async Task Login(LoginModel loginModel)
         {
             var result = await _httpClient.PostAsJsonAsync("accounts/loginuser", loginModel);
+
             if (result.IsSuccessStatusCode)
             {
                 await _localStorageService.RemoveItemAsync("Token");
@@ -70,7 +72,7 @@ namespace ProjectFora.Client.Services
                     //Lägger till username i localstorage för att kunna hämta nuvarande användare
                     await _localStorageService.SetItemAsync("Username", loginModel.Email);
 
-                    _navigationManager.NavigateTo("/profile");
+                    _navigationManager.NavigateTo("/interest");
                 }
                 else
                 {
@@ -122,9 +124,9 @@ namespace ProjectFora.Client.Services
             }
         }
 
-        public async Task<string> ActivateUser(UserModel user)
+        public async Task<string> ActivateUser(string token)
         {
-            var response = await _httpClient.PutAsJsonAsync("accounts/activateuser", user);
+            var response = await _httpClient.GetAsync($"users/user?accessToken={token}");
             if (response.IsSuccessStatusCode)
             {
                 return "You're account is now activated";
@@ -144,5 +146,15 @@ namespace ProjectFora.Client.Services
             return "Something went wrong";
         }
 
+        public async Task<UserModel> GetCurrentUser(string token)
+        {
+            var user = await _httpClient.GetFromJsonAsync<UserModel>($"api/users/user?accessToken={token}");
+            if(user != null)
+            {
+                return user;
+            }
+            return null;
+      
+        }
     }
 }
