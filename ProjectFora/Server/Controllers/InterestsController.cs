@@ -23,32 +23,47 @@ namespace ProjectFora.Server.Controllers
 
         // GET: Interests
         [HttpGet]
-        public List<InterestModel> Get()
+        public List<InterestModel> Get([FromQuery] string accessToken)
         {
-            return _context.Interests.ToList();
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
+
+            if (user != null)
+            {
+                return _context.Interests.ToList();
+            }
+
+            return null;
         }
 
         // GET : Specific interest
         [HttpGet("{id}")]
-        public InterestModel Get([FromRoute] int id)
+        public InterestModel Get([FromRoute] int id, [FromQuery] string accessToken)
         {
-            return _context.Interests.Include(i => i.Threads).Select(i => new InterestModel()
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
+
+            if (user != null)
             {
-                Id = i.Id,
-                Name = i.Name,
-                Threads = i.Threads.Select(t => new ThreadModel()
+                var result= _context.Interests.Include(i => i.Threads).Select(i => new InterestModel()
                 {
-                    Id = t.Id,
-                    Name = t.Name,
-                }).ToList()
-            }).FirstOrDefault(x => x.Id == id);
+                    Id = i.Id,
+                    Name = i.Name,
+                    Threads = i.Threads.Select(t => new ThreadModel()
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                    }).ToList()
+                }).FirstOrDefault(x => x.Id == id);
+
+                return result;
+            }
+            return null;
         }
 
         // POST : New interest
-        [HttpPost("PostInterest")]
-        public async Task Post([FromBody] InterestModel interest, [FromQuery] string token)
+        [HttpPost]
+        public async Task Post([FromBody] InterestModel interest, [FromQuery] string accessToken)
         {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
@@ -66,24 +81,39 @@ namespace ProjectFora.Server.Controllers
 
         // PUT : Edit Interest
         [HttpPut("{id}")]
-        public async Task UpdateInterest(int id, InterestModel interest)
+        public async Task UpdateInterest(InterestModel interest, [FromQuery] string accessToken)
         {
-            var updateInterest = _context.Interests.Where(interest => interest.Id == id);
-            _context.Update(updateInterest);
-            await _context.SaveChangesAsync();
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
+
+            if (user != null)
+            {
+                var updateInterest = _context.Interests.Where(i => i.Id == interest.Id);
+
+                _context.Update(updateInterest);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        // DELETE : Interest
+       
+        // DELETE : Interest 
         [HttpDelete("{id}")]
-        public void Delete([FromRoute] int id, [FromQuery] string token)
+        public async Task Delete([FromRoute] int id, [FromQuery] string accessToken)
         {
-            var interest = _context.Interests.FirstOrDefault(x => x.Id == id);
+            // Måste kolla så att användaren har skapat intresset!
 
-            if (interest != null)
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
+           
+            if(user != null)
             {
-                _context.Interests.Remove(interest);
-                _context.SaveChanges();
+                var interest = _context.Interests.FirstOrDefault(x => x.Id == id);
+
+                if (interest != null)
+                {
+                    _context.Interests.Remove(interest);
+                    await _context.SaveChangesAsync();
+                }
             }
+      
         }
 
 

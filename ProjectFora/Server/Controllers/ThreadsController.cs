@@ -106,7 +106,6 @@ namespace ProjectFora.Server.Controllers
                     _context.SaveChanges();
                 }
             }
-     
         }
     }
 }

@@ -10,14 +10,14 @@ namespace ProjectFora.Client.Services
         Task Login(LoginModel loginModel);
         Task Logout();
         Task ChangePassword(EditPasswordModel user, string token);
-        Task<string> GetToken();
         Task<UserStatusDto> CheckUserLogin(string token);
-        Task<string> ActivateUser(string token);
-        Task<string> DeActivateUser(UserModel user);
+        Task<string> SetUserStatus(string token);
         Task<UserModel> GetCurrentUser(string token);
+        Task<string> GetToken();
 
 
     }
+
     public class UserManager : IUserManager
     {
         private readonly HttpClient _httpClient;
@@ -42,23 +42,20 @@ namespace ProjectFora.Client.Services
                     await _localStorageService.RemoveItemAsync("Token");
                     var token = await result.Content.ReadAsStringAsync();
 
+                    // "Loggar in"
                     if (token != null)
                     {
                         await _localStorageService.SetItemAsync("Token", token);
-
-                        //Lägger till username i localstorage för att kunna hämta nuvarande användare
-                        await _localStorageService.SetItemAsync("Username", userToRegister.Email);
-
 
                     }
                 }
             }
         }
 
-        //Fungerar
+
         public async Task Login(LoginModel loginModel)
         {
-            var result = await _httpClient.PostAsJsonAsync("accounts/loginuser", loginModel);
+            var result = await _httpClient.PostAsJsonAsync("api/users/loginUser", loginModel);
 
             if (result.IsSuccessStatusCode)
             {
@@ -68,9 +65,6 @@ namespace ProjectFora.Client.Services
                 if (token != null)
                 {
                     await _localStorageService.SetItemAsync("Token", token);
-
-                    //Lägger till username i localstorage för att kunna hämta nuvarande användare
-                    await _localStorageService.SetItemAsync("Username", loginModel.Email);
 
                     _navigationManager.NavigateTo("/interest");
                 }
@@ -86,20 +80,10 @@ namespace ProjectFora.Client.Services
             //Loggar ut genom att ta bort tokens från localstorage
 
             await _localStorageService.RemoveItemAsync("Token");
-            await _localStorageService.RemoveItemAsync("Username");
 
             _navigationManager.NavigateTo("/");
         }
 
-        public async Task<string> GetToken()
-        {
-            // 1. Hämta token från Local Storage
-
-            var token = await _localStorageService.GetItemAsStringAsync("Token");
-            token = token.Replace("\"", "");
-
-            return token;
-        }
 
         public async Task<UserStatusDto> CheckUserLogin(string token)
         {
@@ -120,41 +104,40 @@ namespace ProjectFora.Client.Services
         {
             if (user != null)
             {
-                await _httpClient.PutAsJsonAsync($"accounts/edit/?accessToken={token}", user);
+                await _httpClient.PutAsJsonAsync($"api/users?accessToken={token}", user);
             }
         }
 
-        public async Task<string> ActivateUser(string token)
+        public async Task<string> SetUserStatus(string token)
         {
-            var response = await _httpClient.GetAsync($"users/user?accessToken={token}");
-            if (response.IsSuccessStatusCode)
-            {
-                return "You're account is now activated";
-            }
+            var response = await _httpClient.GetAsync($"users/userStatus?accessToken={token}");
 
-            return "Something went wrong";
-        }
-        public async Task<string> DeActivateUser(UserModel user)
-        {
-            var response = await _httpClient.PutAsJsonAsync("accounts/deactivateuser", user);
+            return response.Content.ToString();
 
-            if (response.IsSuccessStatusCode)
-            {
-                return "You're account is now deactivated";
-            }
-
-            return "Something went wrong";
         }
 
         public async Task<UserModel> GetCurrentUser(string token)
         {
             var user = await _httpClient.GetFromJsonAsync<UserModel>($"api/users/user?accessToken={token}");
-            if(user != null)
+            if (user != null)
             {
                 return user;
             }
             return null;
-      
+
+        }
+
+        public async Task<string> GetToken()
+        {
+            var token = await _localStorageService.GetItemAsStringAsync("Token");
+            token = token.Replace("\"", "");
+            if(token != null)
+            {
+                return token;
+
+            }
+            return null;
+
         }
     }
 }

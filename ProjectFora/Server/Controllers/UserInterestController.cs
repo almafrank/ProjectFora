@@ -28,7 +28,7 @@ namespace ProjectFora.Server.Controllers
 
         // GET a singel interest
         [HttpGet("GetSingelInterest:{id}")]
-        public async Task<UserInterestModel> GetSingelInterest( int InterestId)
+        public async Task<UserInterestModel> GetSingelInterest(int InterestId)
         
         {
             var interest = _context.UserInterests.Where(u => u.InterestId == InterestId);
@@ -78,16 +78,30 @@ namespace ProjectFora.Server.Controllers
             }
         }
 
-        [HttpDelete("DeleteUserInterest:{id}")]
-        public async Task DeleteUserInterest(int InterestId)
+        // DELETE : Userinterest
+        [HttpDelete("{id}")]
+        public void Delete([FromRoute] int Id,[FromQuery] string accessToken)
         {
-            var userInterest = _context.UserInterests.FirstOrDefault(x => x.InterestId == InterestId);
-            if (userInterest != null)
+            
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u=> u.Token == accessToken);
+
+            if (user != null)
             {
-                _context.UserInterests.Remove(userInterest);
-                _context.SaveChanges();
+                var userToDeleteFrom = _context.Users.FirstOrDefault(x => x.Username == user.UserName);
+                var deleteInterest = _context.Interests.FirstOrDefault(x => x.Id == Id);
+
+                UserInterestModel userInterest = new();
+                userInterest.Interest = deleteInterest;
+                userInterest.User = userToDeleteFrom;
+
+                if (userToDeleteFrom != null && deleteInterest != null)
+                {
+                    _context.UserInterests.Remove(userInterest);
+                    _context.SaveChanges();
+                }
             }
         }
+
         [HttpPut("UpdateUserInterest")]
         public async Task UpdateUserInterest(int InterestId)
         {
@@ -98,30 +112,5 @@ namespace ProjectFora.Server.Controllers
                 _context.SaveChanges();
             }
         }
-
-
-        //[HttpDelete("removeUserInterest")]
-
-        //public async Task<ActionResult> RemoveUserInterest(UserModel user, InterestModel interest)
-        //{
-       
-
-     
-
-        //    if (user != null && interest != null)
-        //    {
-        //        _context.UserInterests.Remove(new UserInterestModel { User = user, Interest = interest });
-        //        _context.SaveChanges();
-
-        //        return Ok();
-        //    }
-        //    return BadRequest("Någonting gick snett");
-        //}
-
-
-
-
-
-
     }
 }

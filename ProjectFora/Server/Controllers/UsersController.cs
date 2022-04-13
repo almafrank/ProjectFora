@@ -74,7 +74,7 @@ namespace ProjectFora.Server.Controllers
             return BadRequest("User not found");
         }
 
-        // POST : User
+        // POST : Register user to both database
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] RegisterModel userToRegister)
         {
@@ -108,24 +108,54 @@ namespace ProjectFora.Server.Controllers
             return BadRequest();
         }
 
+        // POST : Login user
+        [HttpPost("loginUser")]
+        public async Task<ActionResult> Login(LoginModel user)
+        {
+            var userDb = await _signInManager.UserManager.FindByNameAsync(user.Email);
+
+            if (userDb != null)
+            {
+                var signInResult = await _signInManager.CheckPasswordSignInAsync(userDb, user.Password, false);
+
+                if (signInResult.Succeeded)
+                {
+
+                    string token = GenerateToken();
+
+                    userDb.Token = token;
+                    await _signInManager.UserManager.UpdateAsync(userDb);
+
+                    user.Token = token;
+
+                    return Ok(token);
+                }
+            }
+
+            return BadRequest("User not found");
+        }
+
         // PUT : Edit user
         [HttpPut("{id}")]
-        public async Task Put([FromRoute] int id, [FromBody] EditPasswordModel editPassword, [FromQuery] string token)
+        public async Task<ActionResult> Put([FromRoute] int id, [FromBody] EditPasswordModel editPassword, [FromQuery] string accessToken)
         {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
-                var currentUser = _context.Users.FirstOrDefault(u => u.Id == id);
                 await _signInManager.UserManager.ChangePasswordAsync(user, user.PasswordHash, editPassword.NewPassword);
+                return Ok();
             }
+            return BadRequest("User not found");
         }
-        // PUT : De/Activate user
-        [HttpGet("updateUser")]
-        public async Task<ActionResult> UpdateUser([FromQuery] string token)
-        {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
+        // PUT : De/Activate user
+        [HttpGet("userStatus")]
+
+        public async Task<ActionResult> UpdateUser([FromQuery] string accessToken)
+        {
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
+            string message = "User not found";
             if (user != null)
             {
                 var userToEdit = _context.Users.FirstOrDefault(x => x.Username == user.UserName);
@@ -135,25 +165,27 @@ namespace ProjectFora.Server.Controllers
                     if (userToEdit.Deleted)
                     {
                         userToEdit.Deleted = true;
+                        message = "Account is not active";
                     }
                     else if (userToEdit.Deleted == true)
                     {
                         userToEdit.Deleted = false;
+                        message = "Account is now active";
                     }
 
                     _context.Update(userToEdit);
                     await _context.SaveChangesAsync();
-                    return Ok();
+                    return Ok(message);
                 }
             }
 
-            return BadRequest("User not found");
+            return BadRequest(message);
         }
         // DELETE : user
         [HttpDelete("{id}")]
-        public void Delete([FromRoute] int id, [FromQuery] string token)
+        public void Delete([FromRoute] int id, [FromQuery] string accessToken)
         {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {

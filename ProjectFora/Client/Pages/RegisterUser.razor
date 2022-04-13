@@ -56,16 +56,14 @@ else
     private RegisterModel registerUser = new RegisterModel();
     private bool registered = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        Interests = await Interestmanager.GetAllInterest();
-    }
-
     public async Task HandleRegistration()
     {
+    
         // Skapar en användare till båda IdentityFlora och ForaForum
         await UserManager.RegisterUser(registerUser);
-
+            var token = await UserManager.GetToken();
+        Interests = await Interestmanager.GetAllInterest(token);
+        StateHasChanged();
         registered = true;
     }
 
