@@ -43,6 +43,11 @@ namespace ProjectFora.Client.Services
             throw new NotImplementedException();
         }
 
+        public Task PostAThreadMessage(MessageModel message, string token)
+        {
+            throw new NotImplementedException();
+        }
+
         //Lägger till ett meddelande
         public async Task PostMessage(MessageModel postmessage,string token)
         {

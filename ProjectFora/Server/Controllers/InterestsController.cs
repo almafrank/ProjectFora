@@ -59,7 +59,7 @@ namespace ProjectFora.Server.Controllers
             return null;
         }
 
-        // POST : New interest
+        // POST : Create interest
         [HttpPost]
         public async Task Post([FromBody] InterestModel interest, [FromQuery] string accessToken)
         {
@@ -71,9 +71,12 @@ namespace ProjectFora.Server.Controllers
 
                 if (currentUser != null)
                 {
-                    interest.User = currentUser;
+                    InterestModel newInterest = new();
 
-                    _context.Interests.Add(interest);
+                    newInterest.User = currentUser;
+                    newInterest.Name = interest.Name;
+
+                    _context.Interests.Add(newInterest);
                     await _context.SaveChangesAsync();
                 }
             }

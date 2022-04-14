@@ -24,8 +24,7 @@ namespace ProjectFora.Server.Controllers
 
         // GET: All messages
         [HttpGet]
-        [Route("allthreadmessages")]
-        public List<MessageModel> GetAllThreadMessages([FromQuery] string token)
+        public List<MessageModel> GetAllMessages([FromQuery] string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
@@ -41,7 +40,7 @@ namespace ProjectFora.Server.Controllers
         // GET : messages from specific thread
         [HttpGet]
         [Route("thread")]
-        public List<MessageModel> GetAThreadMessage([FromQuery] int id, [FromQuery] string token)
+        public List<MessageModel> GetAThreadMessage([FromRoute] int id, [FromQuery] string token)
         {
 
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
@@ -76,10 +75,11 @@ namespace ProjectFora.Server.Controllers
             if (user != null)
             {
                 var currentUser = _context.Users.FirstOrDefault(u => u.Username == user.UserName);
-                var thread = _context.Threads.FirstOrDefault(t => t.Id == message.ThreadId);
 
-                if (thread != null)
+                if (currentUser != null)
                 {
+                    var thread = _context.Threads.FirstOrDefault(t => t.Id == message.ThreadId);
+
                     var messageToAdd = new MessageModel()
                     {
                         Message = message.Message,
@@ -97,8 +97,7 @@ namespace ProjectFora.Server.Controllers
         }
 
         // PUT : update message
-        [HttpPut]
-        [Route("putthreadmessage")]
+        [HttpPut("{id}")]
         public async Task UpdateAThreadMessage([FromRoute] int id, [FromBody] MessageModel updatedMessage, [FromQuery] string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
@@ -120,9 +119,8 @@ namespace ProjectFora.Server.Controllers
         }
 
         // DELETE : specific message
-        [HttpDelete]
-        [Route("deletethread")]
-        public async Task DeleteAThreadMessage( int id, string token)
+        [HttpDelete("{id}")]
+        public async Task Delete( int id, string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 

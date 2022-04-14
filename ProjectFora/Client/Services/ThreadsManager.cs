@@ -5,7 +5,7 @@ namespace ProjectFora.Client.Services
     public interface IThreadsManager
     {
         //
-        Task PostThread(ThreadModel postThread);
+        Task CreateThread(ThreadModel postThread);
 
         Task<ThreadModel> DeleteThread(int id);
 
@@ -40,9 +40,9 @@ namespace ProjectFora.Client.Services
             return await _httpClient.GetFromJsonAsync<ThreadModel>($"Threads/GetAThread/{id}");
         }
 
-        public async Task PostThread(ThreadModel postThread)
+        public async Task CreateThread(ThreadModel postThread)
         {
-            await _httpClient.PostAsJsonAsync("Threads/PostThead", postThread);
+            await _httpClient.PostAsJsonAsync("Threads", postThread);
         }
 
         public async Task UpdateThread(int id, ThreadModel thread)

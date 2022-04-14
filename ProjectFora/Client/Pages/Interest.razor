@@ -57,6 +57,8 @@
     {
         var token = await UserManager.GetToken();
         message = await UserInterestManager.DeleteUserInterest(Id, token);
+        userInterests = await UserInterestManager.GetUserInterests(token);
+
         StateHasChanged();
     }
 
@@ -64,7 +66,10 @@
     {
         var token = await UserManager.GetToken();
         message = await UserInterestManager.EditInterest(id, token);
-         StateHasChanged();
+        userInterests = await UserInterestManager.GetUserInterests(token);
+        StateHasChanged();
+
+
     }
 }
 @*Sida: Intressen
