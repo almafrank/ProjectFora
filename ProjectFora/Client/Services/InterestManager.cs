@@ -45,17 +45,18 @@ namespace ProjectFora.Client.Services
 
         public async Task CreateInterest(InterestModel postInterest, string token)
         {
-            await _httpClient.PostAsJsonAsync($"interests?accessToken={token}", postInterest);
+            await _httpClient.PostAsJsonAsync($"api/interests?accessToken={token}", postInterest);
         }
 
         public async Task UpdateInterest(InterestModel updateInterest, string token)
         {
-            await _httpClient.PostAsJsonAsync($"interests?accessToken={token}", updateInterest);
+            await _httpClient.PostAsJsonAsync($"api/interests?accessToken={token}", updateInterest);
         }
 
         public async Task<string> DeleteInterest(int id, string token)
         {
-            var result = await _httpClient.DeleteAsync($"interest/{id}?accessToken={token}");
+            var result = await _httpClient.DeleteAsync($"api/interests/{id}?accessToken={token}");
+
             if (result.IsSuccessStatusCode)
             {
                 return "Interest deleted";

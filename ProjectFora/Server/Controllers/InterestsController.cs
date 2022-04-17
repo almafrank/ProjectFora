@@ -23,13 +23,28 @@ namespace ProjectFora.Server.Controllers
 
         // GET: Interests
         [HttpGet]
-        public List<InterestModel> Get([FromQuery] string accessToken)
+        public async Task<List<InterestModel>> Get([FromQuery] string accessToken)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
-                return _context.Interests.ToList();
+                return _context.Interests
+                    .Include(i => i.Threads)
+                    .Select(i => new InterestModel()
+                    {
+                        Id = i.Id,
+                        Name = i.Name,
+                        UserId = i.UserId,
+                        Threads = i.Threads.Select(i => new ThreadModel()
+                        {
+                            Id = i.Id,
+                            InterestId = i.InterestId,
+                            Name = i.Name,
+                            UserId = i.UserId
+                        }).ToList()
+
+                    }).ToList();
             }
 
             return null;
@@ -43,7 +58,7 @@ namespace ProjectFora.Server.Controllers
 
             if (user != null)
             {
-                var result= _context.Interests.Include(i => i.Threads).Select(i => new InterestModel()
+                var result = _context.Interests.Include(i => i.Threads).Select(i => new InterestModel()
                 {
                     Id = i.Id,
                     Name = i.Name,
@@ -78,26 +93,35 @@ namespace ProjectFora.Server.Controllers
 
                     _context.Interests.Add(newInterest);
                     await _context.SaveChangesAsync();
+
+                    var interestToAdd = _context.Interests.FirstOrDefault(i => i.Name == interest.Name);
+
+                    var result = await _context.UserInterests.AddAsync(new UserInterestModel()
+                    {
+                        User = currentUser,
+                        Interest = interestToAdd
+                    });
+                    await _context.SaveChangesAsync();
                 }
             }
         }
 
         // PUT : Edit Interest
         [HttpPut("{id}")]
-        public async Task UpdateInterest(InterestModel interest, [FromQuery] string accessToken)
+        public async Task UpdateInterest([FromRoute] int id, string editedName, [FromQuery] string accessToken)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
-                var updateInterest = _context.Interests.Where(i => i.Id == interest.Id);
-
-                _context.Update(updateInterest);
+                var interestToUpdate = _context.Interests.FirstOrDefault(i => i.Id == id);
+                interestToUpdate.Name = editedName;
+                _context.Update(interestToUpdate);
                 await _context.SaveChangesAsync();
             }
         }
 
-       
+
         // DELETE : Interest 
         [HttpDelete("{id}")]
         public async Task Delete([FromRoute] int id, [FromQuery] string accessToken)
@@ -105,8 +129,8 @@ namespace ProjectFora.Server.Controllers
             // Måste kolla så att användaren har skapat intresset!
 
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
-           
-            if(user != null)
+
+            if (user != null)
             {
                 var interest = _context.Interests.FirstOrDefault(x => x.Id == id);
 
@@ -116,7 +140,7 @@ namespace ProjectFora.Server.Controllers
                     await _context.SaveChangesAsync();
                 }
             }
-      
+
         }
 
 

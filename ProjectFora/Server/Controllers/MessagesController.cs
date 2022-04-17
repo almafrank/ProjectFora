@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ProjectFora.Server.Controllers
 {
-    [Route("messages")]
+    [Route("api/[controller]")]
     [ApiController]
     public class MessagesController : ControllerBase
     {
@@ -39,8 +39,8 @@ namespace ProjectFora.Server.Controllers
        
         // GET : messages from specific thread
         [HttpGet]
-        [Route("thread")]
-        public List<MessageModel> GetAThreadMessage([FromRoute] int id, [FromQuery] string token)
+        [Route("threadmessages/{id}")]
+        public List<MessageModel> GetThreadMessages([FromRoute] int id, [FromQuery] string token)
         {
 
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
@@ -67,8 +67,7 @@ namespace ProjectFora.Server.Controllers
 
         // POST : message
         [HttpPost]
-        [Route("postthreadmessage")]
-        public async Task PostAThreadMessage([FromBody] MessageModel message, [FromQuery] string token)
+        public async Task CreateMessage([FromQuery] int Id, [FromBody] MessageModel message, [FromQuery] string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
@@ -78,7 +77,7 @@ namespace ProjectFora.Server.Controllers
 
                 if (currentUser != null)
                 {
-                    var thread = _context.Threads.FirstOrDefault(t => t.Id == message.ThreadId);
+                    var thread = _context.Threads.FirstOrDefault(t => t.Id == Id);
 
                     var messageToAdd = new MessageModel()
                     {
@@ -88,7 +87,6 @@ namespace ProjectFora.Server.Controllers
                         CreatedBy = currentUser.Username,
                         MessageCreated = DateTime.Now
                     };
-
 
                     _context.Messages.Add(message);
                      await _context.SaveChangesAsync();

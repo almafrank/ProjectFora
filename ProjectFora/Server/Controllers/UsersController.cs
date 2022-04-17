@@ -135,16 +135,19 @@ namespace ProjectFora.Server.Controllers
             return BadRequest("User not found");
         }
 
-        // PUT : Edit user
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put([FromRoute] int id, [FromBody] EditPasswordModel editPassword, [FromQuery] string accessToken)
+        // PUT : Change password
+        [HttpPut]
+        public async Task<ActionResult> Put([FromBody] EditPasswordModel editPassword, [FromQuery] string accessToken)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
-                await _signInManager.UserManager.ChangePasswordAsync(user, user.PasswordHash, editPassword.NewPassword);
-                return Ok();
+                var result = await _signInManager.UserManager.ChangePasswordAsync(user, editPassword.CurrentPassword, editPassword.NewPassword);
+                if(result.Succeeded)
+                {
+                    return Ok();
+                }
             }
             return BadRequest("User not found");
         }

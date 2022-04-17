@@ -5,15 +5,102 @@
 
 @page "/profile"
 
-<h3>Profile</h3>
 
 @if (userStatus != null && userStatus.IsLoggedIn)
 {
-    <h1>You only see this because you are logged in</h1>
-    @foreach(var interest in UserInterests)
-    {
-        <h2>@interest.Name</h2>
-    }
+
+    <div class="row">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>My interests</th>
+                </tr>
+            </thead>
+            @foreach (var interest in UserInterests)
+            {
+                <tr>
+                    <td>@interest.Name</td>
+                    <button class="btn btn-outline-dark" onclick="@(() => DeleteUserInterest(@interest.Id))">Delete</button>
+                </tr>
+            }
+        </table>
+    </div>
+
+
+
+    <div class="row">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>All interests</th>
+                </tr>
+            </thead>
+            @foreach (var interest in Interests)
+            {
+                <tr>
+                    <td>@interest.Name</td>
+                    <td><button onclick=@(() => AddInterest(interest) )>Add</button></td>
+                    @if (@interest.UserId != null || @interest.UserId == currentUser.Id)
+                    {
+                        <td><button onclick=@(() => DeleteInterest(interest.Id))>Delete</button></td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">My threads</h5>
+            @foreach(var thread in currentUser.Threads)
+            {
+                if(thread != null)
+                {
+                    <p>@thread</p>
+                }
+            }
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Change password</h5>
+            <EditForm Model="changePassword" OnValidSubmit="ChangePassword">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <InputText Id="email" class="form-control" @bind-Value="changePassword.CurrentPassword" />
+                    <ValidationMessage For="@(() => changePassword.CurrentPassword)" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <InputText Id="password" type="password" class="form-control" @bind-Value="changePassword.NewPassword" />
+                    <ValidationMessage For="@(() => changePassword.NewPassword)" />
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Create Interest</h5>
+            <button @onclick="CreateInterest">Create</button>
+            @if (createInterest)
+            {
+                <EditForm Model=interest OnSubmit="SaveCreatedInterest">
+                    <label for="createInterest"></label>
+                    <InputText id="createInterest" class="form-control" type="text" @bind-Value="interest.Name" placeholder="new interest.." />
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </EditForm>
+            }
+        </div>
+    </div>
 
     @if (userStatus.IsAdmin)
     {
@@ -22,37 +109,70 @@
 }
 else
 {
-    <h1>Unauthorized</h1>
-      @*<button @onclick=DeActivateUser>No</button>*@
+    <h1>Loading</h1>
+    @*<button @onclick=DeActivateUser>No</button>*@
 }
 
 @code {
-    public List<InterestModel> UserInterests { get; set; } = new();
-
-    // Auth pipeline:
-    // 1. Hämta token från Local Storage
-    // 2. Skicka den token:en till API:t
-    // 3. API:t kollar i databasen och jämför
-    // 4. Stämmer? Skicka tillbaka en bool "isLoggedIn"
-
+    public List<InterestModel> UserInterests { get; set; } = new List<InterestModel>();
+    public List<InterestModel> Interests { get; set; } = new List<InterestModel>();
+    private UserModel currentUser = new();
+    public EditPasswordModel changePassword = new();
     private UserStatusDto? userStatus;
-    public UserModel User { get; set; } = new();
-    public string userEmail { get; set; }
+    private InterestModel interest = new();
+    private bool createInterest = false;
+
+    private string token;
 
     protected override async Task OnInitializedAsync()
     {
-        // 1. Hämta token från Local Storage
-        var token = await UserManager.GetToken();
-
-        // 2. Skicka den token:en till API:t
+        token = await UserManager.GetToken();
 
         userStatus = await UserManager.CheckUserLogin(token);
         UserInterests = await UserInterestManager.GetUserInterests(token);
-        int x = 1;
+        Interests = await InterestManager.GetAllInterest(token);
+        currentUser = await UserManager.GetCurrentUser(token);
+    }
+
+    async Task AddInterest(InterestModel interest)
+    {
+        await UserInterestManager.AddUserInterest(interest, token);
+        UserInterests = await UserInterestManager.GetUserInterests(token);
+        StateHasChanged();
+    }
+
+    public async Task DeleteUserInterest(int Id)
+    {
+        await UserInterestManager.DeleteUserInterest(Id, token);
+        UserInterests = await UserInterestManager.GetUserInterests(token);
+        StateHasChanged();
+    }
+
+    public async Task DeleteInterest(int Id)
+    {
+        await InterestManager.DeleteInterest(Id, token);
+        Interests = await InterestManager.GetAllInterest(token);
+        await UserInterestManager.DeleteUserInterest(Id, token);
+        UserInterests = await UserInterestManager.GetUserInterests(token);
+        StateHasChanged();
+    }
+
+    public async Task CreateInterest()
+    {
+        createInterest = true;
+    }
+
+    public async Task SaveCreatedInterest()
+    {
+        await InterestManager.CreateInterest(interest, token);
+        Interests = await InterestManager.GetAllInterest(token);
+        StateHasChanged();
+        interest = new();
 
     }
-    //    async Task DeActivateUser()
-    //{
-    //   Message = await UserManager.DeActivateUser(currentUser);
-    //}
+    void ChangePassword()
+    {
+        UserManager.ChangePassword(changePassword, token);
+    }
+
 }

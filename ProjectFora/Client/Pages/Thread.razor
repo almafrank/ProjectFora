@@ -22,9 +22,10 @@
     private MessageModel newMessage = new();
 
 
-    void CreateNewMessage()
+    async Task CreateNewMessage()
     {
-        //MessageManager.PostAThreadMessage(newMessage);
+        var token = await UserManager.GetToken();
+        await MessageManager.CreateMessage(Id, newMessage, token);
     }
 
 

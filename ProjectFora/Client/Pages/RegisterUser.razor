@@ -48,20 +48,23 @@ else
                <h3>@interest.Name</h3><button class="btn btn-outline-dark" @onclick="@(() => AddToUserList(interest.Id))">Add</button>
             </div>
         }
+                    <button @onclick="HandleContinue" class="btn btn-primary">Continue</button>
+
     }
 }
 
 @code {
     public List<InterestModel> Interests { get; set; } = new();
+    public List<InterestModel> UserInterest { get; set; } = new();
     private RegisterModel registerUser = new RegisterModel();
     private bool registered = false;
 
     public async Task HandleRegistration()
     {
-    
+
         // Skapar en användare till båda IdentityFlora och ForaForum
         await UserManager.RegisterUser(registerUser);
-            var token = await UserManager.GetToken();
+        var token = await UserManager.GetToken();
         Interests = await Interestmanager.GetAllInterest(token);
         StateHasChanged();
         registered = true;
@@ -71,9 +74,19 @@ else
     {
         InterestModel interest = new();
         interest.Id = id;
+        UserInterest.Add(interest);
+        if(UserInterest.Count < 5)
+        {
+            
+        }
 
         var token = await UserManager.GetToken();
         await UserInterestManager.AddUserInterest(interest, token);
 
+    }
+
+    void HandleContinue()
+    {
+        NavigationManager.NavigateTo("/profile");
     }
 }

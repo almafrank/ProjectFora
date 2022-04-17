@@ -14,6 +14,7 @@ namespace ProjectFora.Client.Services
         Task<ThreadModel> GetThread(int id);
         
         Task UpdateThread(int id, ThreadModel thread);
+        //Task <List<ThreadModel>> SearchThread(string searchText);
 
     }
     public class ThreadsManager : IThreadsManager
@@ -49,5 +50,10 @@ namespace ProjectFora.Client.Services
         {
             var result = await _httpClient.PostAsJsonAsync($"Threads/updateThread{id}", thread);
         }
+
+        //public async Task<List<ThreadModel>> SearchThread(string searchText)
+        //{
+        //    return await _httpClient.GetFromJsonAsync<List<ThreadModel>>
+        //}
     }
 }

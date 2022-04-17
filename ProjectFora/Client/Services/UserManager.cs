@@ -66,7 +66,7 @@ namespace ProjectFora.Client.Services
                 {
                     await _localStorageService.SetItemAsync("Token", token);
 
-                    _navigationManager.NavigateTo("/interest");
+                    _navigationManager.NavigateTo("/profile");
                 }
                 else
                 {

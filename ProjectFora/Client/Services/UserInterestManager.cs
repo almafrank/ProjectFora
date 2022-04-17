@@ -44,11 +44,15 @@ namespace ProjectFora.Client.Services
             return result.ToString();
         }
 
-        public async Task<string> EditInterest(int Id, string token)
+        public async Task<string> EditInterest(int Id, string editedName, string token)
         {
-            var result = await _httpClient.GetFromJsonAsync<UserInterestModel>($"api/UserInterest/editinterest?accessToken={token}/{Id}");
+            var result = await _httpClient.PutAsJsonAsync($"api/UserInterest/{Id}?accessToken={token}", editedName);
             return result.ToString();
         }
 
+        public Task<string> EditInterest(int Id, string token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

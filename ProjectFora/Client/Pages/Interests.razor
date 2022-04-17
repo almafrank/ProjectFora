@@ -1,0 +1,86 @@
+﻿@page "/interestpage"
+@inject IInterestManager InterestManager
+@inject IUserManager UserManager
+@inject NavigationManager NavigationManager
+@inject IUserInterestManager UserInterestManager
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Your interests:</h5>
+ <hr />
+        @if (userInterests != null)
+        {
+            <p class="card-text">
+                @foreach (var interest in userInterests)
+                {
+                    <p onclick="@(() => NavigateToThreads(@interest.Id))">@interest.Name</p>
+                        @if (@interest.Threads != null)
+                        {
+                       <p> @interest.Threads.Count trådar </p>
+                        }
+               
+
+                    <button class="btn btn-outline-dark" onclick="@(() => DeleteInterest(interest.Id))">Delete</button>
+                    <button class="btn btn-outline-dark" onclick="@(() => SaveEditedInterest(interest))">Edit</button>
+                }
+            </p>
+        }
+        else
+        {
+            <p>No interests</p>
+        }
+    </div>
+</div>
+
+@code {
+    public List<InterestModel>? userInterests;
+    private UserStatusDto? userStatus;
+    private UserModel currentUser = new();
+    private string interestEdited = "";
+    private string token;
+    public string message;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get token
+        token = await UserManager.GetToken();
+
+        userStatus = await UserManager.CheckUserLogin(token);
+
+        // Get user interests
+        userInterests = await UserInterestManager.GetUserInterests(token);
+        currentUser = await UserManager.GetCurrentUser(token);
+    }
+
+    public void NavigateToThreads(int Id)
+    {
+        NavigationManager.NavigateTo($"threads/{Id}");
+    }
+
+    private async Task SaveEditedInterest(InterestModel interestToEdit)
+    {
+        await InterestManager.UpdateInterest(interestToEdit, token);
+        userInterests = await UserInterestManager.GetUserInterests(token);
+        StateHasChanged();
+    }
+
+    public async Task DeleteInterest(int Id)
+    {
+        message = await UserInterestManager.DeleteUserInterest(Id, token);
+        await InterestManager.DeleteInterest(Id, token);
+        userInterests = await UserInterestManager.GetUserInterests(token);
+        StateHasChanged();
+    }
+}
+
+@*Sida: Intressen
+    En sida där man kan se intressen man har på sin användare
+    Funktionalitet
+    Se intressen man har på sin användare -check
+    Se antalet trådar som finns skapade för intresset -check
+    Klicka och gå in på ett intresse -check
+
+    Ta bort ett intresse om man skapat det - check
+    Ändra namn på ett intresse om man skapat det och det inte har några trådar
+*@
