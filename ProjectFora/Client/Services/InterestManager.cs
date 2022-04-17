@@ -8,7 +8,7 @@ namespace ProjectFora.Client.Services
         Task<List<InterestModel>> GetAllInterest(string token);
         Task<InterestModel> GetInterest(int id, string token);
         Task CreateInterest(InterestModel postInterest, string token);
-        Task UpdateInterest(InterestModel updateInterest, string token);
+        Task UpdateInterest(int id, string editedName, string token);
         Task<string> DeleteInterest(int id, string token);
     }
     public class InterestManager : IInterestManager
@@ -48,9 +48,9 @@ namespace ProjectFora.Client.Services
             await _httpClient.PostAsJsonAsync($"api/interests?accessToken={token}", postInterest);
         }
 
-        public async Task UpdateInterest(InterestModel updateInterest, string token)
+        public async Task UpdateInterest(int id, string editedName, string token)
         {
-            await _httpClient.PostAsJsonAsync($"api/interests?accessToken={token}", updateInterest);
+            await _httpClient.PutAsJsonAsync($"api/interests/{id}?accessToken={token}", editedName);
         }
 
         public async Task<string> DeleteInterest(int id, string token)

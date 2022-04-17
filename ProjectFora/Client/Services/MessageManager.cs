@@ -48,15 +48,10 @@ namespace ProjectFora.Client.Services
             throw new NotImplementedException();
         }
 
-        public Task PostAThreadMessage(MessageModel message, string token)
-        {
-            throw new NotImplementedException();
-        }
-
         // Skapar ett meddelande i en tråd
-        public async Task CreateMessage(int Id, MessageModel newMessage,string token)
+        public async Task CreateMessage(int threadId, MessageModel newMessage, string token)
         {
-            await _httpClient.PostAsJsonAsync($"api/messages?id={Id}&accessToken={token}", newMessage);
+           var result = await _httpClient.PostAsJsonAsync($"api/messages?threadId={threadId}&accessToken={token}", newMessage);
         }
 
         

@@ -108,7 +108,7 @@ namespace ProjectFora.Server.Controllers
 
         // PUT : Edit Interest
         [HttpPut("{id}")]
-        public async Task UpdateInterest([FromRoute] int id, string editedName, [FromQuery] string accessToken)
+        public async Task UpdateInterest([FromRoute] int id, [FromBody] string editedName, [FromQuery] string accessToken)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
