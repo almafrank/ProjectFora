@@ -51,9 +51,9 @@ namespace ProjectFora.Server.Controllers
 
         // POST : Thread
         [HttpPost]
-        public async Task Post([FromBody] ThreadDto thread, [FromQuery] string token)
+        public async Task Post([FromBody] ThreadDto thread, [FromQuery] string accessToken)
         {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
             var currentUser = _context.Users.FirstOrDefault(u => u.Username == user.UserName);
 
             if (currentUser != null)

@@ -18,10 +18,15 @@
                         {
                        <p> @interest.Threads.Count trådar </p>
                         }
-               
-
+               @if(interest.UserId == currentUser.Id)
+                    {
                     <button class="btn btn-outline-dark" onclick="@(() => DeleteInterest(interest.Id))">Delete</button>
-                    <button class="btn btn-outline-dark" onclick="@(() => SaveEditedInterest(interest))">Edit</button>
+                  @if(interest.Threads != null)
+                        {
+                            <input type="text" @bind-value=changeName placeholder="change name.." />
+                        <button class="btn btn-outline-dark" onclick="@(() => SaveEditedInterest(interest.Id))">Edit</button>
+                        }
+                    }
                 }
             </p>
         }
@@ -36,7 +41,7 @@
     public List<InterestModel>? userInterests;
     private UserStatusDto? userStatus;
     private UserModel currentUser = new();
-    private string interestEdited = "";
+    private string changeName = "";
     private string token;
     public string message;
 
@@ -58,11 +63,14 @@
         NavigationManager.NavigateTo($"threads/{Id}");
     }
 
-    private async Task SaveEditedInterest(InterestModel interestToEdit)
+    private async Task SaveEditedInterest(int Id)
     {
-        await InterestManager.UpdateInterest(interestToEdit, token);
+
+        await InterestManager.UpdateInterest(Id, changeName, token);
+        changeName = "";
         userInterests = await UserInterestManager.GetUserInterests(token);
         StateHasChanged();
+
     }
 
     public async Task DeleteInterest(int Id)

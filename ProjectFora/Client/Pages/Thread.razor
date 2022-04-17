@@ -6,7 +6,7 @@
 <h3>Create a new message</h3>
 
 
-<EditForm Model=@newMessage OnValidSubmit="CreateNewMessage">
+<EditForm Model=newMessage OnValidSubmit="CreateNewMessage">
     <div class="form-group">
         <label for="message">Message</label>
         <InputText class="form-control" id="message" @bind-Value="newMessage.Message"/>
@@ -18,21 +18,15 @@
 @code {
     [Parameter]
     public int Id { get; set; }
+    private string token = "";
 
     private MessageModel newMessage = new();
-
-
-    async Task CreateNewMessage()
-    {
-        var token = await UserManager.GetToken();
-        await MessageManager.CreateMessage(Id, newMessage, token);
-    }
 
 
     protected override async Task OnParametersSetAsync()
     {
         // Get token
-        string token = await LocalStorage.GetItemAsStringAsync("token");
+        token = await UserManager.GetToken();
 
         if(!String.IsNullOrEmpty(token))
         {
@@ -40,5 +34,13 @@
             var threadMessages = MessageManager.GetThreadMessages(Id, token);
         }
     }
+
+    async Task CreateNewMessage()
+    {
+      
+        await MessageManager.CreateMessage(Id, newMessage, token);
+    }
+
+
 
 }

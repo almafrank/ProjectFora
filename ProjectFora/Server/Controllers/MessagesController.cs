@@ -67,9 +67,9 @@ namespace ProjectFora.Server.Controllers
 
         // POST : message
         [HttpPost]
-        public async Task CreateMessage([FromQuery] int Id, [FromBody] MessageModel message, [FromQuery] string token)
+        public async Task CreateMessage([FromQuery] int threadId, [FromBody] MessageModel message, [FromQuery] string accessToken)
         {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
@@ -77,7 +77,7 @@ namespace ProjectFora.Server.Controllers
 
                 if (currentUser != null)
                 {
-                    var thread = _context.Threads.FirstOrDefault(t => t.Id == Id);
+                    var thread = _context.Threads.FirstOrDefault(t => t.Id == threadId);
 
                     var messageToAdd = new MessageModel()
                     {
