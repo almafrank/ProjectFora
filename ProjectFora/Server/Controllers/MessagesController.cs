@@ -39,7 +39,7 @@ namespace ProjectFora.Server.Controllers
        
         // GET : messages from specific thread
         [HttpGet]
-        [Route("threadmessages/{id}")]
+        [Route("{id}")]
         public List<MessageModel> GetThreadMessages([FromRoute] int id, [FromQuery] string token)
         {
 
@@ -47,9 +47,13 @@ namespace ProjectFora.Server.Controllers
 
             if (user != null)
             {
-                var messages = _context.Messages.Include(m => m.User).Where(m => m.ThreadId == id).Select(m => new MessageModel
+                var messages = _context.Messages
+                    .Include(m => m.User)
+                    .Where(m => m.ThreadId == id)
+                    .Select(m => new MessageModel
                 {
                     Message = m.Message,
+                    MessageCreated = m.MessageCreated,
                     User = new UserModel()
                     {
                         Id = m.User.Id,
@@ -67,7 +71,7 @@ namespace ProjectFora.Server.Controllers
 
         // POST : message
         [HttpPost]
-        public async Task CreateMessage([FromQuery] int threadId, [FromBody] MessageModel message, [FromQuery] string accessToken)
+        public async Task CreateMessage([FromBody] MessageDto newMessage, [FromQuery] string accessToken)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
@@ -77,18 +81,18 @@ namespace ProjectFora.Server.Controllers
 
                 if (currentUser != null)
                 {
-                    var thread = _context.Threads.FirstOrDefault(t => t.Id == threadId);
+                    var thread = _context.Threads.FirstOrDefault(t => t.Id == newMessage.ThreadId);
 
                     var messageToAdd = new MessageModel()
                     {
-                        Message = message.Message,
+                        Message = newMessage.Message,
                         User = currentUser,
                         Thread = thread,
                         CreatedBy = currentUser.Username,
                         MessageCreated = DateTime.Now
                     };
 
-                    _context.Messages.Add(message);
+                    _context.Messages.Add(messageToAdd);
                      await _context.SaveChangesAsync();
                 }
             }
