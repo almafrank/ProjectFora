@@ -78,12 +78,12 @@ namespace ProjectFora.Server.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] RegisterModel userToRegister)
         {
-            if (_signInManager.UserManager.Users.Any(x => x.UserName == userToRegister.Email))
+            if (_signInManager.UserManager.Users.Any(x => x.UserName == userToRegister.UserName))
             {
                 return BadRequest("Username is already taken");
             }
 
-            ApplicationUser newUser = new() { UserName = userToRegister.Email};
+            ApplicationUser newUser = new() { UserName = userToRegister.UserName, Email = userToRegister.Email};
 
             var result = await _signInManager.UserManager.CreateAsync(newUser, userToRegister.Password);
 

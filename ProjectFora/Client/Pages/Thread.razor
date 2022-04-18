@@ -18,10 +18,14 @@
 {
     @foreach (var message in allMessages)
     {
-    
-            <div class="userMessage">
+    @if(message.UserId == currentUser.Id)
+        {
+            <div></div>
+        }
+        <div class="userMessage">
                 <p>@message.Message</p>
-                <p>@message.MessageCreated</p>
+                <p>Publiced: @message.MessageCreated</p>
+                <p>Created by: @message.User.Username</p>
             </div>
   
     }
