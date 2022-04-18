@@ -8,6 +8,22 @@
 @inject NavigationManager NavigationManager
 
 @* Matar ut alla interest threads *@
+
+<EditForm Model=searchWord OnValidSubmit="Search">
+    <label for="searchWord" >Search</label>
+    <input type="text" placeholder="search" id=searchWord @bind-value="searchWord" />
+    <button type="submit" class="btn btn-primary"> Search</button>
+
+</EditForm>
+@if(threads != null)
+{
+    @foreach(var thread in threads)
+    {
+        <p>
+            @thread.Name
+        </p>
+    }
+}
 @if (Interest != null)
 
 {
@@ -58,6 +74,7 @@
     <button type="submit" class="btn btn-primary">Create</button>
 </EditForm>
 
+
 }
 
 @code {
@@ -67,9 +84,13 @@
     public InterestModel Interest = new();//new intrest
     private ThreadDto threadToAdd = new();
     private string token = "";
+    private List<ThreadModel> threads = new();
+    private List<ThreadModel> searchThread = new();
+    private string searchWord = "";
 
     protected override async Task OnParametersSetAsync()
     {
+
         token = await UserManager.GetToken();
         // Get interest with its threads
         Interest = await InterestManager.GetInterest(Id, token);
@@ -99,6 +120,14 @@
         threadToAdd.InterestId = Id;
         await ThreadManager.CreateThread(threadToAdd, token);
         Interest = await InterestManager.GetInterest(Id, token);
+        StateHasChanged();
+    }
+    private async Task Search()
+    {
+        threads = await ThreadManager.GetAllThreads(token);
+
+        searchThread = threads.Where(x => x.Name.ToLower().Contains(searchWord.ToLower())).ToList();
+        threads = searchThread;
         StateHasChanged();
     }
 

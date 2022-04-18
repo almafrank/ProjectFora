@@ -8,11 +8,13 @@ namespace ProjectFora.Client.Services
 
         Task<ThreadModel> DeleteThread(int id);
 
-        Task<List<ThreadModel>> GetAllThreads();
+        Task<List<ThreadModel>> GetAllThreads(string accessToken);
 
         Task<ThreadModel> GetThread(int id);
         
         Task UpdateThread(int id, ThreadModel thread);
+
+        
         //Task <List<ThreadModel>> SearchThread(string searchText);
 
     }
@@ -30,9 +32,9 @@ namespace ProjectFora.Client.Services
             return await _httpClient.GetFromJsonAsync<ThreadModel>($"Threads/DeleteThread/{id}");
         }
 
-        public async Task<List<ThreadModel>> GetAllThreads()
+        public async Task<List<ThreadModel>> GetAllThreads(string accessToken)
         {
-            return await _httpClient.GetFromJsonAsync<List<ThreadModel>>("Threads/AllThreads");
+            return await _httpClient.GetFromJsonAsync<List<ThreadModel>>($"api/threads?accessToken={accessToken}");
         }
 
         public async Task<ThreadModel> GetThread(int id)
@@ -49,6 +51,9 @@ namespace ProjectFora.Client.Services
         {
             var result = await _httpClient.PostAsJsonAsync($"Threads/updateThread{id}", thread);
         }
+
+        
+        
 
         //public async Task<List<ThreadModel>> SearchThread(string searchText)
         //{

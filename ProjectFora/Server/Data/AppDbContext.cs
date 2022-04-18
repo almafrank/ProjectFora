@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-
 namespace ProjectFora.Server.Data
 {
     public class AppDbContext : DbContext
@@ -70,5 +69,7 @@ namespace ProjectFora.Server.Data
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.SetNull);
         }
+
+        
     }
 }

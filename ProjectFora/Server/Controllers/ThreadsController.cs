@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProjectFora.Server.Data;
 using ProjectFora.Server.Models;
 
@@ -22,9 +23,9 @@ namespace ProjectFora.Server.Controllers
 
         // GET : Threads
         [HttpGet]
-        public List<ThreadModel> Get([FromQuery] string token)
+        public List<ThreadModel> Get([FromQuery] string accessToken)
         {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
@@ -107,7 +108,6 @@ namespace ProjectFora.Server.Controllers
                 }
             }
         }
-
-        
+       
     }
 }
