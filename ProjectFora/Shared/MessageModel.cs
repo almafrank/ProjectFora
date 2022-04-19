@@ -14,7 +14,8 @@ namespace ProjectFora.Shared
         public int Id { get; set; }
         public string Message { get; set; } = String.Empty;
         public DateTime MessageCreated { get; set; }
-        public string CreatedBy { get; set; } = String.Empty;
+        public bool IsEdited { get; set; }
+        public bool HasDeleted { get; set; }
 
         // Relations
         [ForeignKey(nameof(Thread))]

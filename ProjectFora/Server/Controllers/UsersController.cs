@@ -20,20 +20,6 @@ namespace ProjectFora.Server.Controllers
             _signInManager = signInManager;
         }
 
-        // GET : Users
-        [HttpGet]
-        public List<UserModel> Get([FromQuery] string token)
-        {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
-
-            if (user != null)
-            {
-                return _context.Users.ToList();
-            }
-
-            return null;
-        }
-
         // GET : Current user
         [HttpGet("user")]
         public UserModel GetUser([FromQuery] string accessToken)
@@ -49,7 +35,6 @@ namespace ProjectFora.Server.Controllers
                     return currentUser;
                 }
             }
-
             return null;
         }
 
@@ -167,12 +152,12 @@ namespace ProjectFora.Server.Controllers
                 {
                     if (userToEdit.Deleted)
                     {
-                        userToEdit.Deleted = true;
+                        userToEdit.Deleted = false;
                         message = "Account is not active";
                     }
-                    else if (userToEdit.Deleted == true)
+                    else if (!userToEdit.Deleted)
                     {
-                        userToEdit.Deleted = false;
+                        userToEdit.Deleted = true;
                         message = "Account is now active";
                     }
 
@@ -185,16 +170,17 @@ namespace ProjectFora.Server.Controllers
             return BadRequest(message);
         }
         // DELETE : user
-        [HttpDelete("{id}")]
-        public void Delete([FromRoute] int id, [FromQuery] string accessToken)
+        [HttpDelete]
+        public async Task Delete([FromQuery] string accessToken)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
-                var currentUser = _context.Users.FirstOrDefault(u => u.Id == id);
-                _context.Remove(id);
-                _context.SaveChangesAsync();
+                var currentUser = _context.Users.FirstOrDefault(u => u.Username == user.UserName);
+               await  _signInManager.UserManager.DeleteAsync(user);
+                _context.Remove(currentUser);
+               await _context.SaveChangesAsync();
             }
         }
         public string GenerateToken()

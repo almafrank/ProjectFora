@@ -41,6 +41,7 @@ namespace ProjectFora.Server.Controllers
                             Id = i.Id,
                             InterestId = i.InterestId,
                             Name = i.Name,
+                            Messages = i.Messages,
                             UserId = i.UserId
                         }).ToList()
 
@@ -62,10 +63,14 @@ namespace ProjectFora.Server.Controllers
                 {
                     Id = i.Id,
                     Name = i.Name,
+                    UserId = i.UserId,
                     Threads = i.Threads.Select(t => new ThreadModel()
                     {
                         Id = t.Id,
                         Name = t.Name,
+                        Messages = t.Messages,
+                        UserId = t.UserId,
+                        InterestId = t.InterestId,
                     }).ToList()
                 }).FirstOrDefault(x => x.Id == id);
 

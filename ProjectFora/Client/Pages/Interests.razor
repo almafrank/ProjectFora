@@ -5,36 +5,37 @@
 @inject IUserInterestManager UserInterestManager
 
 <div class="card">
-    <div class="card-body">
-        <h5 class="card-title">Your interests:</h5>
- <hr />
-        @if (userInterests != null)
-        {
-            <p class="card-text">
-                @foreach (var interest in userInterests)
+    <div class="card-header">Mina intressen:</div>
+    @if (userInterests != null)
+    {
+        <div class="card-body">
+            @foreach (var interest in userInterests)
+            {
+                <h5 class="card-title" onclick="@(() => NavigateToThreads(@interest.Id))">@interest.Name</h5>
+
+                @if (@interest.Threads != null)
                 {
-                    <p onclick="@(() => NavigateToThreads(@interest.Id))">@interest.Name</p>
-                        @if (@interest.Threads != null)
-                        {
-                       <p> @interest.Threads.Count trådar </p>
-                        }
-               @if(interest.UserId == currentUser.Id)
+                    <h6 class="card-subtitle mb-2 text-muted"> @interest.Threads.Count trådar</h6>
+                }
+
+                @if (interest.UserId == currentUser.Id)
+                {
+                    <a class="card-link" onclick="@(() => DeleteInterest(interest.Id))">Ta bort</a>
+
+                    @if (interest.Threads != null)
                     {
-                    <button class="btn btn-outline-dark" onclick="@(() => DeleteInterest(interest.Id))">Delete</button>
-                  @if(interest.Threads != null)
-                        {
-                            <input type="text" @bind-value=changeName placeholder="change name.." />
-                        <button class="btn btn-outline-dark" onclick="@(() => SaveEditedInterest(interest.Id))">Edit</button>
-                        }
+                        <input type="text" @bind-value=changeName placeholder="change name.." />
+                        <a class="card-link" onclick="@(() => SaveEditedInterest(interest.Id))">Ändra</a>
                     }
                 }
-            </p>
-        }
-        else
-        {
-            <p>No interests</p>
-        }
-    </div>
+                <hr />
+            }
+        </div>
+    }
+    else
+    {
+       <div> <p>Laddar..</p></div>
+    }
 </div>
 
 @code {
@@ -42,8 +43,8 @@
     private UserStatusDto? userStatus;
     private UserModel currentUser = new();
     private string changeName = "";
-    private string token;
-    public string message;
+    private string? token;
+    public string? message;
 
 
     protected override async Task OnInitializedAsync()

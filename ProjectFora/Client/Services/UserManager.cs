@@ -11,11 +11,10 @@ namespace ProjectFora.Client.Services
         Task Logout();
         Task ChangePassword(EditPasswordModel user, string token);
         Task<UserStatusDto> CheckUserLogin(string token);
-        Task<string> SetUserStatus(string token);
         Task<UserModel> GetCurrentUser(string token);
+        Task ActivateAccount(string accessToken);
+        Task DeleteAccount(string accessToken);
         Task<string> GetToken();
-
-
     }
 
     public class UserManager : IUserManager
@@ -52,7 +51,6 @@ namespace ProjectFora.Client.Services
             }
         }
 
-
         public async Task Login(LoginModel loginModel)
         {
             var result = await _httpClient.PostAsJsonAsync("api/users/loginUser", loginModel);
@@ -65,12 +63,6 @@ namespace ProjectFora.Client.Services
                 if (token != null)
                 {
                     await _localStorageService.SetItemAsync("Token", token);
-
-                    _navigationManager.NavigateTo("/profile");
-                }
-                else
-                {
-                    _navigationManager.NavigateTo("/login");
                 }
             }
         }
@@ -108,14 +100,6 @@ namespace ProjectFora.Client.Services
             }
         }
 
-        public async Task<string> SetUserStatus(string token)
-        {
-            var response = await _httpClient.GetAsync($"users/userStatus?accessToken={token}");
-
-            return response.Content.ToString();
-
-        }
-
         public async Task<UserModel> GetCurrentUser(string token)
         {
             var user = await _httpClient.GetFromJsonAsync<UserModel>($"api/users/user?accessToken={token}");
@@ -138,6 +122,16 @@ namespace ProjectFora.Client.Services
             }
             return null;
 
+        }
+
+        public async Task ActivateAccount(string accessToken)
+        {
+            await _httpClient.GetAsync($"api/users/userStatus?accessToken={accessToken}");
+        }
+
+        public async Task DeleteAccount(string accessToken)
+        {
+            await _httpClient.DeleteAsync($"api/users?accessToken={accessToken}");
         }
     }
 }

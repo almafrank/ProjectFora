@@ -47,22 +47,33 @@ else
 {
     @if (Interests != null)
     {
-        @foreach (var interest in Interests)
-        {
-            <div>
-                <h3>@interest.Name</h3><button class="btn btn-outline-dark" @onclick="@(() => AddToUserList(interest.Id))">Add</button>
-            </div>
-        }
-        <button @onclick="HandleContinue" class="btn btn-primary">Continue</button>
+        <div class="card">
+            <div class="card-header">Välj intresse:</div>
+            @foreach (var interest in Interests)
+            {
+                <div class="card-body">
+                    @if (count < 5)
+                    {
+                        <h5 class="card-title">@interest.Name</h5>
 
+                        <button class="btn btn-outline-dark" @onclick="@(() => AddToUserList(interest.Id))">Add</button>
+
+                    }
+                </div>
+
+            }
+            <button @onclick="HandleContinue" class="btn btn-primary">Continue</button>
+        </div>
     }
+
 }
 
 @code {
     public List<InterestModel> Interests { get; set; } = new();
-    public List<InterestModel> UserInterest { get; set; } = new();
+    private InterestModel interest = new();
     private RegisterModel registerUser = new RegisterModel();
     private bool registered = false;
+    private int count;
 
     public async Task HandleRegistration()
     {
@@ -77,14 +88,8 @@ else
 
     private async void AddToUserList(int id)
     {
-        InterestModel interest = new();
         interest.Id = id;
-        UserInterest.Add(interest);
-        if (UserInterest.Count < 5)
-        {
-
-        }
-
+        count++;
         var token = await UserManager.GetToken();
         await UserInterestManager.AddUserInterest(interest, token);
 

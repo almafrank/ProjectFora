@@ -1,35 +1,90 @@
 ﻿@page "/thread/{Id:int}"
 @inject IUserManager UserManager
 @inject IMessageManager MessageManager
+@inject IThreadsManager ThreadsManager
 @inject ILocalStorageService LocalStorage
 
-<h3>Create a new message</h3>
+<div class="card">
+    <div class="card-header">Skapa ett nytt meddelande</div>
+    <div class="card-body">
 
+        <EditForm Model=newMessage OnValidSubmit="CreateNewMessage">
+            <div class="form-group">
+                <label for="message">Message</label>
+                <InputText class="form-control" id="message" @bind-Value="newMessage.Message" />
+            </div>
+            <button type="submit" class="btn btn-success btn-sm">Spara</button>
+        </EditForm>
 
-<EditForm Model=newMessage OnValidSubmit="CreateNewMessage">
-    <div class="form-group">
-        <label for="message">Message</label>
-        <InputText class="form-control" id="message" @bind-Value="newMessage.Message" />
     </div>
-    <button type="submit" class="btn btn-primary">Create</button>
-</EditForm>
+</div>
 
+<div class="card">
 @if (allMessages != null)
 {
+     <div class="card-header">Meddelande:</div>
     @foreach (var message in allMessages)
     {
-    @if(message.UserId == currentUser.Id)
-        {
-            <div></div>
-        }
-        <div class="userMessage">
-                <p>@message.Message</p>
-                <p>Publiced: @message.MessageCreated</p>
-                <p>Created by: @message.User.Username</p>
-            </div>
-  
+        <div class="card-body">
+            @if (message.User.Banned || message.User.Deleted)
+            {
+                <h2>&#128508;</h2>
+            }
+
+            @if (message.User.Id == currentUser.Id)
+            {
+                <div class="card-text userMessage">
+
+
+                    @if (message.HasDeleted)
+                    {
+                        <p class="editOrDeleted">@message.Message</p>
+                    }
+                    else
+                    {
+                        <p>@message.Message</p>
+                    }
+                    <p>Published: @message.MessageCreated</p>
+                    <p>Created by: @message.User.Username</p>
+
+                    @if (message.IsEdited && !message.HasDeleted)
+                    {
+                        <p class="editOrDeleted">Message has been edited</p>
+                    }
+                    @if (!message.HasDeleted)
+                    {
+                        <button class="btn btn-warning btn-sm" @onclick="EditMessage">Ändra</button>
+                        <button class="btn btn-danger btn-sm" @onclick="(() =>DeleteMessage(message.Id))">Ta bort</button>
+                    }
+                </div>
+                @if (editMessage == true && !message.HasDeleted)
+                {
+                    <input type="text" @bind-value="editedMessage.Message" />
+                    <button class="btn btn-success btn-sm" @onclick="(() => SaveEditMessage(message.Id))">Spara</button>
+                }
+            }
+            else
+            {
+                @if (message.HasDeleted)
+                {
+                    <p class="editOrDeleted">@message.Message</p>
+                }
+                else
+                {
+                    <p>@message.Message</p>
+                }
+                <p>Publicerad: @message.MessageCreated</p>
+                <p>Skapad av: @message.User.Username</p>
+                @if (message.IsEdited)
+                {
+                    <p class="editOrDeleted">@messageUpdated</p>
+                }
+            }
+        </div>
     }
 }
+</div>
+
 @code {
     [Parameter]
     public int Id { get; set; }
@@ -37,6 +92,9 @@
     private UserModel currentUser = new();
     private List<MessageModel> allMessages = new();
     private MessageDto newMessage = new();
+    private MessageDto editedMessage = new();
+    private bool editMessage = false;
+    private string messageUpdated = "";
 
 
     protected override async Task OnParametersSetAsync()
@@ -49,14 +107,42 @@
             // Get the thread with all messages
             allMessages = await MessageManager.GetThreadMessages(Id, token);
             allMessages.Sort((x, y) => -x.MessageCreated.CompareTo(y.MessageCreated));
+            currentUser = await UserManager.GetCurrentUser(token);
         }
-        currentUser = await UserManager.GetCurrentUser(token);
     }
 
     async Task CreateNewMessage()
     {
         newMessage.ThreadId = Id;
         await MessageManager.CreateMessage(newMessage, token);
+        await UpdateAllMessages();
+    }
+    async Task EditMessage()
+    {
+        editMessage = true;
+    }
+
+    async Task SaveEditMessage(int id)
+    {
+        messageUpdated = await MessageManager.UpdateAThreadMessage(id, editedMessage, token);
+        await UpdateAllMessages();
+        editMessage = false;
+    }
+    async Task DeleteMessage(int id)
+    {
+        await MessageManager.DeleteMessage(id, token);
+        await UpdateAllMessages();
+
+    }
+    async Task SaveDeleteMessage(int id)
+    {
+        messageUpdated = await MessageManager.UpdateAThreadMessage(id, editedMessage, token);
+        await UpdateAllMessages();
+        editMessage = false;
+    }
+
+    async Task UpdateAllMessages()
+    {
         allMessages = await MessageManager.GetThreadMessages(Id, token);
         allMessages.Sort((x, y) => -x.MessageCreated.CompareTo(y.MessageCreated));
         StateHasChanged();
@@ -64,4 +150,4 @@
 
 
 
-}
+    }

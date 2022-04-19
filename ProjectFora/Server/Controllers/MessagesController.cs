@@ -53,7 +53,11 @@ namespace ProjectFora.Server.Controllers
                     .Select(m => new MessageModel
                 {
                     Message = m.Message,
+                    Id = m.Id,
+                    ThreadId = m.ThreadId,
                     MessageCreated = m.MessageCreated,
+                    IsEdited = m.IsEdited,
+                    HasDeleted = m.HasDeleted,
                     User = new UserModel()
                     {
                         Id = m.User.Id,
@@ -87,8 +91,8 @@ namespace ProjectFora.Server.Controllers
                     {
                         Message = newMessage.Message,
                         User = currentUser,
+                        UserId = currentUser.Id,
                         Thread = thread,
-                        CreatedBy = currentUser.Username,
                         MessageCreated = DateTime.Now
                     };
 
@@ -100,9 +104,9 @@ namespace ProjectFora.Server.Controllers
 
         // PUT : update message
         [HttpPut("{id}")]
-        public async Task UpdateAThreadMessage([FromRoute] int id, [FromBody] MessageModel updatedMessage, [FromQuery] string token)
+        public async Task Put([FromRoute] int id,[FromBody] MessageDto updatedMessage, [FromQuery] string accessToken)
         {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
@@ -111,8 +115,7 @@ namespace ProjectFora.Server.Controllers
                 if (messageToUpdate != null)
                 {
                     messageToUpdate.Message = updatedMessage.Message;
-
-                    // Todo: Set the a message bool property "Edited" to True
+                    messageToUpdate.IsEdited = true;
 
                     _context.Messages.Update(messageToUpdate);
                     await _context.SaveChangesAsync();
@@ -122,18 +125,21 @@ namespace ProjectFora.Server.Controllers
 
         // DELETE : specific message
         [HttpDelete("{id}")]
-        public async Task Delete( int id, string token)
+        public async Task Delete([FromRoute] int id,[FromQuery] string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
             if (user != null)
             {
-                var usermessage = _context.Messages.FirstOrDefault(Message => Message.Id == id);
-                if (usermessage != null)
+                var messageToDelete = _context.Messages.FirstOrDefault(Message => Message.Id == id);
+                if (messageToDelete != null)
                 {
-                    _context.Messages.Remove(usermessage);
+                    messageToDelete.HasDeleted = true;
+                    messageToDelete.Message = "Message has been deleted";
+                    _context.Messages.Update(messageToDelete);
                     _context.SaveChanges();
                 }
+
             }
         }
     }

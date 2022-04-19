@@ -4,33 +4,59 @@
 @inject IInterestManager InterestManager
 @inject ILocalStorageService LocalStorage
 
-<div class="card">
-    <h1 class="card-header">Login</h1>
-    <div class="card-body">
-        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
-            <DataAnnotationsValidator />
-            <div class="form-group">
-                <label>Username</label>
-                <InputText @bind-Value="loginModel.Email" class="form-control" />
-                <ValidationMessage For="@(() => loginModel.Email)" />
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
-                <ValidationMessage For="@(() => loginModel.Password)" />
-            </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-            <NavLink href="register" class="btn btn-link">Register</NavLink>
-        </EditForm>
+@if (!isLoggedIn)
+{
+    <div class="card">
+        <h1 class="card-header">Login</h1>
+        <div class="card-body">
+            <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Username</label>
+                    <InputText @bind-Value="loginModel.Email" class="form-control" />
+                    <ValidationMessage For="@(() => loginModel.Email)" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
+                    <ValidationMessage For="@(() => loginModel.Password)" />
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+                <NavLink href="register" class="btn btn-link">Register</NavLink>
+            </EditForm>
+        </div>
     </div>
-</div>
+}
+else
+{
+    @if (currentUser.Deleted)
+    {
+        <p>Would you like to activate your account?</p>
+        <button @onclick="ActivateAccount">Yes</button>
+        <button>No</button>
+    }
+}
+
+
+
 
 @code {
     private LoginModel loginModel = new LoginModel();
-
+    private UserModel currentUser = new();
+    private bool isLoggedIn;
+    private string token = "";
 
     private async void HandleLogin()
     {
         await UserManager.Login(loginModel);
+        token = await UserManager.GetToken();
+        currentUser = await UserManager.GetCurrentUser(token);
+        isLoggedIn = true;
+        NavigationManager.NavigateTo("/profile");
+    }
+    async void ActivateAccount()
+    {
+        await UserManager.ActivateAccount(token);
+        NavigationManager.NavigateTo("/profile");
     }
 }
