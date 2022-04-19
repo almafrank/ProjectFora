@@ -6,13 +6,13 @@ namespace ProjectFora.Client.Services
     {
         Task CreateThread(ThreadDto postThread, string accessToken);
 
-        Task<ThreadModel> DeleteThread(int id);
+        Task DeleteThread(int id, string accessToken);
 
         Task<List<ThreadModel>> GetAllThreads(string accessToken);
 
-        Task<ThreadModel> GetThread(int id);
+        Task<ThreadModel> GetThread(int id, string token);
         
-        Task UpdateThread(int id, ThreadModel thread);
+        Task UpdateThread(int id, ThreadDto thread, string accessToken);
 
         
         //Task <List<ThreadModel>> SearchThread(string searchText);
@@ -27,9 +27,9 @@ namespace ProjectFora.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<ThreadModel> DeleteThread(int id)
+        public async Task DeleteThread(int id, string accessToken)
         {
-            return await _httpClient.GetFromJsonAsync<ThreadModel>($"Threads/DeleteThread/{id}");
+            await _httpClient.DeleteAsync($"api/threads/{id}?accessToken={accessToken}");
         }
 
         public async Task<List<ThreadModel>> GetAllThreads(string accessToken)
@@ -37,9 +37,10 @@ namespace ProjectFora.Client.Services
             return await _httpClient.GetFromJsonAsync<List<ThreadModel>>($"api/threads?accessToken={accessToken}");
         }
 
-        public async Task<ThreadModel> GetThread(int id)
+
+        public async Task<ThreadModel> GetThread(int id, string token)
         {
-            return await _httpClient.GetFromJsonAsync<ThreadModel>($"Threads/GetAThread/{id}");
+            return await _httpClient.GetFromJsonAsync<ThreadModel>($"api/threads/thread{id}?token={token}");
         }
 
         public async Task CreateThread(ThreadDto postThread, string accessToken)
@@ -47,9 +48,9 @@ namespace ProjectFora.Client.Services
            var result = await _httpClient.PostAsJsonAsync($"api/threads?accessToken={accessToken}", postThread);
         }
 
-        public async Task UpdateThread(int id, ThreadModel thread)
+        public async Task UpdateThread(int id, ThreadDto threadToUpdate, string accessToken)
         {
-            var result = await _httpClient.PostAsJsonAsync($"Threads/updateThread{id}", thread);
+            var result = await _httpClient.PutAsJsonAsync($"api/threads/{id}?accessToken={accessToken}", threadToUpdate);
         }
 
         

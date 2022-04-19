@@ -22,9 +22,18 @@ a, .btn-link {
     padding-top: 1.1rem;
 }
 
-.userMessage{
-background-color: dodgerblue;
+.userMessage {
+    background-color: dodgerblue;
 }
+
+.editOrDeleted {
+    color: red;
+}
+
+.headerColor {
+    background-color:darkolivegreen;
+}
+
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }

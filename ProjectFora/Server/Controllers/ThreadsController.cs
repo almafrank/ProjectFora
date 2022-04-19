@@ -23,21 +23,38 @@ namespace ProjectFora.Server.Controllers
 
         // GET : Threads
         [HttpGet]
-        public List<ThreadModel> Get([FromQuery] string accessToken)
+        public async Task<List<ThreadModel>> Get([FromQuery] string accessToken)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
-                return _context.Threads.ToList();
+                var threads = _context.Threads
+                    .Include(t => t.Messages)
+                    .Select(t => new ThreadModel
+                    {
+                        Name = t.Name,
+                        Id = t.Id,
+                        UserId = t.UserId,
+                        User = t.User,
+                        Messages = t.Messages.Select(m => new MessageModel()
+                        {
+                            Id = m.User.Id,
+                            Message = m.Message,
+                            User = m.User,
+                        }).ToList()
+                    }).ToList();
+
+                return threads;
             }
 
             return null;
+
         }
 
         // GET : Specific thread:
-        [HttpGet("{id}")]
-        public ThreadModel GetAThread([FromRoute] int id, [FromQuery] string token)
+        [HttpGet("thread/{id}")]
+        public async Task<ThreadModel> GetThread([FromRoute] int id, [FromQuery] string token)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
 
@@ -78,14 +95,14 @@ namespace ProjectFora.Server.Controllers
 
         // PUT : Edit thread:
         [HttpPut("{id}")]
-        public void Put([FromRoute] int id, [FromBody] ThreadModel updatedThread, [FromQuery] string token)
+        public void Put([FromRoute] int id, [FromBody] ThreadDto threadToUpdate, [FromQuery] string accessToken)
         {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {
                 var thread = _context.Threads.FirstOrDefault(t => t.Id == id);
-                thread.Name = updatedThread.Name;
+                thread.Name = threadToUpdate.Name;
 
                 _context.Update(thread);
                 _context.SaveChanges();
@@ -94,9 +111,9 @@ namespace ProjectFora.Server.Controllers
 
         // DELETE : Thread 
         [HttpDelete("{id}")]
-        public void Delete([FromRoute] int id, [FromQuery] string token)
+        public void Delete([FromRoute] int id, [FromQuery] string accessToken)
         {
-            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == token);
+            var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
             if (user != null)
             {

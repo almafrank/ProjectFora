@@ -8,74 +8,76 @@
 @inject NavigationManager NavigationManager
 
 @* Matar ut alla interest threads *@
+<h1>@Interest.Name</h1>
+<hr />
+@*<button type="text" @onclick="SortThreads">Sort</button>
 
-<EditForm Model=searchWord OnValidSubmit="Search">
-    <label for="searchWord" >Search</label>
-    <input type="text" placeholder="search" id=searchWord @bind-value="searchWord" />
+    <EditForm Model=searchWord OnValidSubmit="Search">
+    <label for="searchWord">Search</label>
+    <input type="text" placeholder="searchThread" id=searchWord @bind-value="searchWord" />
     <button type="submit" class="btn btn-primary"> Search</button>
+    </EditForm>
 
-</EditForm>
-@if(threads != null)
-{
-    @foreach(var thread in threads)
+    @if (searchThread != null)
     {
-        <p>
-            @thread.Name
-        </p>
-    }
-}
-@if (Interest != null)
+    @foreach (var thread in searchThread)
+    {
+    <p>
+    @thread.Name
+    <button @onclick="@(()=>NavigateToAThread(@thread.Id))">Go to thread</button>
 
-{
-    <h1>@Interest.Name</h1>
-    <hr />
-    <h3>Threads:</h3>
-    <div>
+    </p>
+    }
+    }*@
+<div class="card">
+    @if (Interest != null)
+    {
+        <div class="card-header">Trådar:</div>
         @if (Interest.Threads != null)
         {
-            @foreach (var thread in Interest.Threads)
-            {
+            <div class="card-body">
+                @foreach (var thread in Interest.Threads)
+                {
+                    <h5 class="card-title" @onclick="@(()=>NavigateToAThread(@thread.Id))">@thread.Name</h5>
 
-                @thread.Name
-                @if (thread.Messages != null)
-                {
-                    <p>@thread.Messages.Count meddelande</p>
-                }
-                @if (thread.User != null)
-                {
-                    @if (thread.User.Banned == true || thread.User.Deleted == true)
+                    @if (thread.Messages != null)
                     {
-                        <p>"red symbol"</p>
+                        <h6 class="card-subtitle mb-2 text-muted">@thread.Messages.Count meddelande</h6>
                     }
+
                     @if (thread.UserId == currentUser.Id)
                     {
-                        <button @onclick="@(()=>NavigateToDeleteAThread(@thread.Id))">Delete A Thread</button>
+                        <button class="btn btn-danger btn-sm" @onclick="@(()=>DeleteAThread(@thread.Id))">Ta bort tråd</button>
                         @if (thread.Messages == null || !thread.Messages.Any())
                         {
-                        <button @onclick="@(()=>NavigateToUpdateAThread(@thread.Id))">Update A Thread</button>
+                            <button class="btn btn-warning btn-sm" @onclick="UpdateAThread">Ändra</button>
+                            @if (editThread == true)
+                            {
+                                <input type="text" @bind-value="threadToEdit.Name" />
+                                <button class="btn btn-success btn-sm" @onclick="@(()=>SaveEditedThread(@thread.Id))">Spara</button>
+
+                            }
                         }
                     }
+                    <hr />
                 }
-
-                <button @onclick="@(()=>NavigateToAThread(@thread.Id))">Get A Thread</button>
-                <button @onclick="@(()=>NavigateToUpdateAThread(@thread.Id))">Update A Thread</button>
-            }
+            </div>
         }
+    }
+</div>
+
+<div class="card">
+    <div class="card-header">Skapa ny tråd</div>
+    <div class="card-body">
+        <EditForm Model=threadToAdd OnValidSubmit="AddThread">
+            <div class="form-group">
+                <label for="name">Tråd</label>
+                <InputText class="form-control" placeholder="vad vill du diskutera?" id="name" @bind-Value="threadToAdd.Name" />
+            </div>
+            <button type="submit" class="btn btn-success btn-sm">Spara</button>
+        </EditForm>
     </div>
-
-
-    <h3>Create a new thread</h3>
-
-<EditForm Model=threadToAdd OnValidSubmit="AddThread">
-    <div class="form-group">
-        <label for="name">Thread name</label>
-        <InputText class="form-control" id="name" @bind-Value="threadToAdd.Name"/>
-    </div>
-    <button type="submit" class="btn btn-primary">Create</button>
-</EditForm>
-
-
-}
+</div>
 
 @code {
     [Parameter]
@@ -83,6 +85,8 @@
     private UserModel currentUser = new();
     public InterestModel Interest = new();//new intrest
     private ThreadDto threadToAdd = new();
+    private ThreadDto threadToEdit = new();
+    private bool editThread;
     private string token = "";
     private List<ThreadModel> threads = new();
     private List<ThreadModel> searchThread = new();
@@ -104,42 +108,58 @@
     }
 
     //2.metod att ta bort en tråd när man klickar
-    public async Task NavigateToDeleteAThread(int Id)
+    public async Task DeleteAThread(int id)
     {
-        NavigationManager.NavigateTo($"thread/{Id}");
+        await ThreadManager.DeleteThread(id, token);
+        UpdateInterest();
     }
 
     //3.metod som updaterar/edit en tråd när man klickar
-    public async Task NavigateToUpdateAThread(int Id)
+    public async Task UpdateAThread()
     {
-        NavigationManager.NavigateTo($"thread/{Id}");
+        editThread = true;
+    }
+
+    public async Task SaveEditedThread(int id)
+    {
+        await ThreadManager.UpdateThread(id, threadToEdit, token);
+        UpdateInterest();
+
     }
 
     public async Task AddThread()
     {
         threadToAdd.InterestId = Id;
         await ThreadManager.CreateThread(threadToAdd, token);
-        Interest = await InterestManager.GetInterest(Id, token);
-        StateHasChanged();
+        UpdateInterest();
     }
     private async Task Search()
     {
-        threads = await ThreadManager.GetAllThreads(token);
 
-        searchThread = threads.Where(x => x.Name.ToLower().Contains(searchWord.ToLower())).ToList();
-        threads = searchThread;
+        searchThread = Interest.Threads.Where(x => x.Name.ToLower().Contains(searchWord.ToLower())).ToList();
+
+        StateHasChanged();
+    }
+    private async Task SortThreads()
+    {
+        Interest.Threads.Sort((a, b) => a.Name.CompareTo(b.Name));
+        StateHasChanged();
+    }
+
+    async Task UpdateInterest()
+    {
+        Interest = await InterestManager.GetInterest(Id, token);
         StateHasChanged();
     }
 
 
 
-
-}
-
+    }
 
 
 
-@*Sida: Trådar
+
+    @*Sida: Trådar
 
     Funktionalitet:
 
@@ -150,4 +170,4 @@
 
     2.Ta bort en tråd om man skapat den
     3.Ändra namn på en tråd om man skapat den och den inte har några meddelanden
-*@
+    *@
