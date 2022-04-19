@@ -7,7 +7,7 @@ namespace ProjectFora.Client.Services
     {
         Task<List<InterestModel>> GetAllInterest(string token);
         Task<InterestModel> GetInterest(int id, string token);
-        Task CreateInterest(InterestModel postInterest, string token);
+        Task<string> CreateInterest(InterestModel postInterest, string token);
         Task UpdateInterest(int id, string editedName, string token);
         Task<string> DeleteInterest(int id, string token);
     }
@@ -43,9 +43,16 @@ namespace ProjectFora.Client.Services
             return null;
         }
 
-        public async Task CreateInterest(InterestModel postInterest, string token)
+        public async Task<string> CreateInterest(InterestModel postInterest, string token)
         {
-            await _httpClient.PostAsJsonAsync($"api/interests?accessToken={token}", postInterest);
+
+            var response = await _httpClient.PostAsJsonAsync($"api/interests?accessToken={token}", postInterest);
+            if(response.Content != null)
+            {
+                var result = response.Content.ReadAsStringAsync();
+                return result.Result.ToString();
+            }
+            return null;
         }
 
         public async Task UpdateInterest(int id, string editedName, string token)

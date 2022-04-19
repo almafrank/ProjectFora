@@ -45,15 +45,15 @@
             <h5 class="card-header">Mina trådar</h5>
             @foreach (var thread in threads)
             {
-                <div class="card-body">
                 @if (threads != null)
                 {
                     @if (thread.UserId == currentUser.Id)
                     {
-                        <h5 class="card-title" @onclick="@(()=>NavigateToAThread(@thread.Id))">@thread.Name</h5>
+                        <div class="card-body">
+                            <h5 class="card-title" @onclick="@(()=>NavigateToAThread(@thread.Id))">@thread.Name</h5>
+                        </div>
                     }
                 }
-                </div>
             }
         </div>
     </div>
@@ -94,6 +94,8 @@
                     <InputText id="createInterest" class="form-control" type="text" @bind-Value="interest.Name" placeholder="nytt intresse.." />
                     <button type="submit" class="btn btn-success btn-sm">Spara</button>
                 </EditForm>
+
+                <p>@message</p>
             }
         </div>
     </div>
@@ -101,12 +103,12 @@
     <div class="card">
         <div class="card-header">Kontoinställningar</div>
         <div class="card-body">
-<button class="btn btn-warning btn-sm" @onclick="DeActivateUser">Inaktivera</button>
-        @if (currentUser.Deleted)
-        {
-            <p>Ditt konto är inaktiverat</p>
-        }
-        <button class="btn btn-danger btn-sm" @onclick="DeleteAccount">Radera konto</button>
+            <button class="btn btn-warning btn-sm" @onclick="DeActivateUser">Inaktivera</button>
+            @if (currentUser.Deleted)
+            {
+                <p>Ditt konto är inaktiverat</p>
+            }
+            <button class="btn btn-danger btn-sm" @onclick="DeleteAccount">Radera konto</button>
         </div>
     </div>
 }
@@ -124,6 +126,7 @@ else
     private UserStatusDto? userStatus;
     private InterestModel interest = new();
     private bool createInterest = false;
+    private string message = "";
 
     private string token;
 
@@ -168,7 +171,8 @@ else
 
     public async Task SaveCreatedInterest()
     {
-        await InterestManager.CreateInterest(interest, token);
+
+        message = await InterestManager.CreateInterest(interest, token);
         Interests = await InterestManager.GetAllInterest(token);
         StateHasChanged();
         interest = new();

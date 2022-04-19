@@ -135,7 +135,7 @@ namespace ProjectFora.Server.Controllers
                 if (messageToDelete != null)
                 {
                     messageToDelete.HasDeleted = true;
-                    messageToDelete.Message = "Message has been deleted";
+                    messageToDelete.Message = "Meddelandet har raderats";
                     _context.Messages.Update(messageToDelete);
                     _context.SaveChanges();
                 }

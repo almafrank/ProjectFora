@@ -69,28 +69,39 @@ namespace ProjectFora.Server.Controllers
 
         // POST : Thread
         [HttpPost]
-        public async Task Post([FromBody] ThreadDto thread, [FromQuery] string accessToken)
+        public async Task<ActionResult> Post([FromBody] ThreadDto thread, [FromQuery] string accessToken)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
             var currentUser = _context.Users.FirstOrDefault(u => u.Username == user.UserName);
 
             if (currentUser != null)
             {
-                var interest = _context.Interests.FirstOrDefault(i => i.Id == thread.InterestId);
+                var result = _context.Threads.Where(i => i.Name.ToLower() == thread.Name.ToLower()).ToList();
 
-                if (interest != null)
+                if (result.Any())
                 {
-                    var threadToAdd = new ThreadModel()
-                    {
-                        Name = thread.Name,
-                        Interest = interest,
-                        User = currentUser
-                    };
-
-                    _context.Threads.Add(threadToAdd);
-                    await _context.SaveChangesAsync();
+                    return Ok("Tråd finns redan");
                 }
+                else
+                {
+                    var interest = _context.Interests.FirstOrDefault(i => i.Id == thread.InterestId);
+
+                    if (interest != null)
+                    {
+                        var threadToAdd = new ThreadModel()
+                        {
+                            Name = thread.Name,
+                            Interest = interest,
+                            User = currentUser
+                        };
+
+                        _context.Threads.Add(threadToAdd);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
             }
+            return BadRequest();
         }
 
         // PUT : Edit thread:
@@ -125,6 +136,6 @@ namespace ProjectFora.Server.Controllers
                 }
             }
         }
-       
+
     }
 }

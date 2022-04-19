@@ -15,27 +15,56 @@
             </div>
             <button type="submit" class="btn btn-success btn-sm">Spara</button>
         </EditForm>
-
+        <p>@message</p>
     </div>
 </div>
 
 <div class="card">
-@if (allMessages != null)
-{
-     <div class="card-header">Meddelande:</div>
-    @foreach (var message in allMessages)
+    @if (allMessages != null)
     {
-        <div class="card-body">
-            @if (message.User.Banned || message.User.Deleted)
-            {
-                <h2>&#128508;</h2>
-            }
+        <div class="card-header">Meddelande:</div>
+        @foreach (var message in allMessages)
+        {
+            <div class="card-body">
+                @if (message.User.Banned || message.User.Deleted)
+                {
+                    <h2>&#128508;</h2>
+                }
 
-            @if (message.User.Id == currentUser.Id)
-            {
-                <div class="card-text userMessage">
+                @if (message.User.Id == currentUser.Id)
+                {
+                    <div class="card-text userMessage">
 
 
+                        @if (message.HasDeleted)
+                        {
+                            <p class="editOrDeleted">@message.Message</p>
+                        }
+                        else
+                        {
+                            <p>@message.Message</p>
+                        }
+                        <p>Publicerad: @message.MessageCreated</p>
+                        <p>Skapad av: @message.User.Username</p>
+
+                        @if (message.IsEdited && !message.HasDeleted)
+                        {
+                            <p class="editOrDeleted">Meddelandet har ändrats</p>
+                        }
+                        @if (!message.HasDeleted)
+                        {
+                            <button class="btn btn-warning btn-sm" @onclick="EditMessage">Ändra</button>
+                            <button class="btn btn-danger btn-sm" @onclick="(() =>DeleteMessage(message.Id))">Ta bort</button>
+                        }
+                    </div>
+                    @if (editMessage == true && !message.HasDeleted)
+                    {
+                        <input type="text" @bind-value="editedMessage.Message" />
+                        <button class="btn btn-success btn-sm" @onclick="(() => SaveEditMessage(message.Id))">Spara</button>
+                    }
+                }
+                else
+                {
                     @if (message.HasDeleted)
                     {
                         <p class="editOrDeleted">@message.Message</p>
@@ -44,45 +73,16 @@
                     {
                         <p>@message.Message</p>
                     }
-                    <p>Published: @message.MessageCreated</p>
-                    <p>Created by: @message.User.Username</p>
-
-                    @if (message.IsEdited && !message.HasDeleted)
+                    <p>Publicerad: @message.MessageCreated</p>
+                    <p>Skapad av: @message.User.Username</p>
+                    @if (message.IsEdited)
                     {
-                        <p class="editOrDeleted">Message has been edited</p>
+                        <p class="editOrDeleted">@messageUpdated</p>
                     }
-                    @if (!message.HasDeleted)
-                    {
-                        <button class="btn btn-warning btn-sm" @onclick="EditMessage">Ändra</button>
-                        <button class="btn btn-danger btn-sm" @onclick="(() =>DeleteMessage(message.Id))">Ta bort</button>
-                    }
-                </div>
-                @if (editMessage == true && !message.HasDeleted)
-                {
-                    <input type="text" @bind-value="editedMessage.Message" />
-                    <button class="btn btn-success btn-sm" @onclick="(() => SaveEditMessage(message.Id))">Spara</button>
                 }
-            }
-            else
-            {
-                @if (message.HasDeleted)
-                {
-                    <p class="editOrDeleted">@message.Message</p>
-                }
-                else
-                {
-                    <p>@message.Message</p>
-                }
-                <p>Publicerad: @message.MessageCreated</p>
-                <p>Skapad av: @message.User.Username</p>
-                @if (message.IsEdited)
-                {
-                    <p class="editOrDeleted">@messageUpdated</p>
-                }
-            }
-        </div>
+            </div>
+        }
     }
-}
 </div>
 
 @code {
@@ -95,6 +95,7 @@
     private MessageDto editedMessage = new();
     private bool editMessage = false;
     private string messageUpdated = "";
+    private string message = "";
 
 
     protected override async Task OnParametersSetAsync()
@@ -113,9 +114,17 @@
 
     async Task CreateNewMessage()
     {
-        newMessage.ThreadId = Id;
-        await MessageManager.CreateMessage(newMessage, token);
-        await UpdateAllMessages();
+        if (newMessage.Message == "" || newMessage.Message == null)
+        {
+            message = "Meddelande måste innehålla text";
+        }
+        else
+        {
+            newMessage.ThreadId = Id;
+            await MessageManager.CreateMessage(newMessage, token);
+            await UpdateAllMessages();
+        }
+
     }
     async Task EditMessage()
     {

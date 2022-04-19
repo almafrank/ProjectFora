@@ -81,7 +81,7 @@ namespace ProjectFora.Server.Controllers
 
         // POST : Create interest
         [HttpPost]
-        public async Task Post([FromBody] InterestModel interest, [FromQuery] string accessToken)
+        public async Task<ActionResult> Post([FromBody] InterestModel interest, [FromQuery] string accessToken)
         {
             var user = _signInManager.UserManager.Users.FirstOrDefault(u => u.Token == accessToken);
 
@@ -91,24 +91,35 @@ namespace ProjectFora.Server.Controllers
 
                 if (currentUser != null)
                 {
-                    InterestModel newInterest = new();
-
-                    newInterest.User = currentUser;
-                    newInterest.Name = interest.Name;
-
-                    _context.Interests.Add(newInterest);
-                    await _context.SaveChangesAsync();
-
-                    var interestToAdd = _context.Interests.FirstOrDefault(i => i.Name == interest.Name);
-
-                    var result = await _context.UserInterests.AddAsync(new UserInterestModel()
+                    var result = _context.Interests.Where(i => i.Name.ToLower() == interest.Name.ToLower()).ToList();
+                    if(result.Any())
                     {
-                        User = currentUser,
-                        Interest = interestToAdd
-                    });
-                    await _context.SaveChangesAsync();
+                        return Ok("Intresse finns redan");
+                    }
+                    else
+                    {
+                        InterestModel newInterest = new();
+
+                        newInterest.User = currentUser;
+                        newInterest.Name = interest.Name;
+
+                        _context.Interests.Add(newInterest);
+                        await _context.SaveChangesAsync();
+
+                        var interestToAdd = _context.Interests.FirstOrDefault(i => i.Name == interest.Name);
+
+                        await _context.UserInterests.AddAsync(new UserInterestModel()
+                        {
+                            User = currentUser,
+                            Interest = interestToAdd
+                        });
+                        await _context.SaveChangesAsync();
+                        return Ok();
+                    }
+                   
                 }
             }
+            return BadRequest();
         }
 
         // PUT : Edit Interest

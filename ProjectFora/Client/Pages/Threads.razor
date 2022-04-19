@@ -10,25 +10,32 @@
 @* Matar ut alla interest threads *@
 <h1>@Interest.Name</h1>
 <hr />
-@*<button type="text" @onclick="SortThreads">Sort</button>
+<button type="text" @onclick="SortThreads">Sortera efter namn</button>
+<div class="card">
+    <div class="card-header">Sök</div>
+    <div class="card-body">
+        <EditForm Model=searchWord OnValidSubmit="Search">
+            <label for="searchWord">Search</label>
+            <input type="text" placeholder="searchThread" id=searchWord @bind-value="searchWord" />
+            <button type="submit" class="btn btn-primary"> Search</button>
+        </EditForm>
+    </div>
+</div>
 
-    <EditForm Model=searchWord OnValidSubmit="Search">
-    <label for="searchWord">Search</label>
-    <input type="text" placeholder="searchThread" id=searchWord @bind-value="searchWord" />
-    <button type="submit" class="btn btn-primary"> Search</button>
-    </EditForm>
 
-    @if (searchThread != null)
-    {
+@if (searchThread != null)
+{
+    <div class="card">
+        <div class="card-header">Sökresultat</div>
     @foreach (var thread in searchThread)
     {
-    <p>
-    @thread.Name
-    <button @onclick="@(()=>NavigateToAThread(@thread.Id))">Go to thread</button>
-
-    </p>
+        <div class="card-body">
+            <h5 class="card-title" @onclick="@(()=>NavigateToAThread(@thread.Id))">@thread.Name</h5>
+        </div>
     }
-    }*@
+    </div>
+}
+
 <div class="card">
     @if (Interest != null)
     {
@@ -76,6 +83,7 @@
             </div>
             <button type="submit" class="btn btn-success btn-sm">Spara</button>
         </EditForm>
+        <p>@message</p>
     </div>
 </div>
 
@@ -91,6 +99,7 @@
     private List<ThreadModel> threads = new();
     private List<ThreadModel> searchThread = new();
     private string searchWord = "";
+    private string message = "";
 
     protected override async Task OnParametersSetAsync()
     {
@@ -130,7 +139,7 @@
     public async Task AddThread()
     {
         threadToAdd.InterestId = Id;
-        await ThreadManager.CreateThread(threadToAdd, token);
+        message = await ThreadManager.CreateThread(threadToAdd, token);
         UpdateInterest();
     }
     private async Task Search()

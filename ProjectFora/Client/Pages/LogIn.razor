@@ -31,9 +31,13 @@ else
 {
     @if (currentUser.Deleted)
     {
-        <p>Would you like to activate your account?</p>
-        <button @onclick="ActivateAccount">Yes</button>
-        <button>No</button>
+        <p>Vill du aktivera ditt konto??</p>
+        <button @onclick="ActivateAccount">Ja!</button>
+        <button @onclick="HandleNo">Nej</button>
+    }
+    else
+    {
+        NavigationManager.NavigateTo("/profile");
     }
 }
 
@@ -52,11 +56,14 @@ else
         token = await UserManager.GetToken();
         currentUser = await UserManager.GetCurrentUser(token);
         isLoggedIn = true;
-        NavigationManager.NavigateTo("/profile");
     }
     async void ActivateAccount()
     {
         await UserManager.ActivateAccount(token);
+        NavigationManager.NavigateTo("/profile");
+    }
+    async void HandleNo()
+    {
         NavigationManager.NavigateTo("/profile");
     }
 }

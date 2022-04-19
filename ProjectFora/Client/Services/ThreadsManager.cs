@@ -4,7 +4,7 @@ namespace ProjectFora.Client.Services
 {
     public interface IThreadsManager
     {
-        Task CreateThread(ThreadDto postThread, string accessToken);
+        Task<string> CreateThread(ThreadDto postThread, string accessToken);
 
         Task DeleteThread(int id, string accessToken);
 
@@ -43,9 +43,15 @@ namespace ProjectFora.Client.Services
             return await _httpClient.GetFromJsonAsync<ThreadModel>($"api/threads/thread{id}?token={token}");
         }
 
-        public async Task CreateThread(ThreadDto postThread, string accessToken)
+        public async Task<string> CreateThread(ThreadDto postThread, string accessToken)
         {
-           var result = await _httpClient.PostAsJsonAsync($"api/threads?accessToken={accessToken}", postThread);
+           var response = await _httpClient.PostAsJsonAsync($"api/threads?accessToken={accessToken}", postThread);
+            if (response.Content != null)
+            {
+                var result = response.Content.ReadAsStringAsync();
+                return result.Result.ToString();
+            }
+            return null;
         }
 
         public async Task UpdateThread(int id, ThreadDto threadToUpdate, string accessToken)
